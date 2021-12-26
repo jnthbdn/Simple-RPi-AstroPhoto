@@ -1,5 +1,7 @@
 class TwoPanelContainer{
 
+    static MIN_SPACE = 50;
+
     constructor(leftID, rightID, spacerID){
         this.leftPanel = document.getElementById(leftID);
         this.rightPanel = document.getElementById(rightID);
@@ -21,7 +23,7 @@ class TwoPanelContainer{
     mouse_move(evt){
         if( !this.isMoveSpacer ){ return; }
 
-        let newPosX = Math.max( 50, Math.min(evt.clientX, document.body.clientWidth - 50));
+        let newPosX = Math.max( TwoPanelContainer.MIN_SPACE, Math.min(evt.clientX, document.body.clientWidth - TwoPanelContainer.MIN_SPACE));
 
         this.spacer.style.left = newPosX;
         this.leftPanel.style.width = newPosX;
