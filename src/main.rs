@@ -1,11 +1,22 @@
-#[macro_use] extern crate rocket;
+#[allow(dead_code)]
+#[allow(unused_imports)]
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_files as fs;
+
+#[get("/hello")]
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hello world!")
 }
 
-#[launch]
-fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .service(hello)
+            .service(fs::Files::new("/", "static").index_file("index.html"))
+    })
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await
 }
