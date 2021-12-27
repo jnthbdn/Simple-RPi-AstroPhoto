@@ -30,5 +30,4 @@ class TwoPanelContainer{
         this.rightPanel.style.width = document.body.clientWidth - newPosX - this.spacer.clientWidth;
     }
 
-
 }

@@ -1,0 +1,68 @@
+body{
+    color: gray;
+}
+
+table{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    table tr:hover{
+        background-color: #101020;
+    }
+
+    table tr td {
+        padding: 0px 8px;
+    }
+
+        table tr td input {
+            width: 100%;
+        }
+
+input[type="text"], input[type="number"], select{
+    background-color: gray;
+}
+
+input[type="range"]{
+    background-color: #004e00;
+}
+    input[type="range"]::-webkit-slider-thumb {
+        background: #00A000;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        background: #00A000; 
+    }
+
+    input[type="range"]:disabled{
+        background-color: #3e4e3e;
+    }
+        input[type="range"]:disabled::-webkit-slider-thumb {
+            background: #90A090;
+        }
+
+        input[type="range"]:disabled::-moz-range-thumb {
+            background: #90A090; 
+        }
+
+#left_container {
+    background-color: rgb(8, 0, 8);
+}
+
+#right_container {
+    background-color: rgb(8, 0, 51);
+}
+
+#spacer_container {
+    background-color: white;
+}
+    #spacer_container div {  
+        color: black;
+    }
+
+.option_block {
+    border: 1px solid white;
+}
+    .option_block .title_block {
+        background-color: rgb(8, 0, 8);
+    }

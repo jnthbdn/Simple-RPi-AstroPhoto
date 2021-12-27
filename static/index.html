@@ -2,6 +2,7 @@
     <head>
         <title>Simple RPi AstroPhoto</title>
         <link rel="stylesheet" href="css/base.css"/>
+        <link rel="stylesheet" href="css/color.css"/>
 
         <script src="js/container.js"></script>
         <script src="js/base.js"></script>
@@ -10,44 +11,137 @@
     <body>
         <div id="main_container">
             <div id="left_container">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id suscipit eros. Morbi fermentum neque at justo condimentum luctus. Pellentesque facilisis odio molestie libero viverra posuere efficitur quis neque. Curabitur pretium sapien vel tortor sodales, vel varius risus molestie. Morbi tempus convallis purus, eu tincidunt felis mollis a. Maecenas semper, orci ac dapibus cursus, erat diam molestie mauris, nec hendrerit ligula massa fermentum tortor. Integer quis purus porttitor, bibendum nisl sed, auctor dui. Nullam in imperdiet tortor, fringilla dapibus arcu. Nulla ut laoreet mi. Maecenas blandit eros sapien, quis placerat neque bibendum luctus. Proin eu ligula fermentum, ornare eros aliquam, lobortis lorem. In tempus scelerisque lorem quis tempor. Aliquam lorem erat, hendrerit vel dapibus porttitor, posuere et neque. Suspendisse potenti. Morbi purus lacus, ultricies sed arcu ac, fringilla vulputate neque.
-
-                Aliquam eget urna lectus. Integer ut tincidunt eros. Nullam urna felis, finibus eu ullamcorper eu, interdum fermentum massa. Donec sed nunc pretium, sodales magna ac, scelerisque dui. Donec ut lectus eget lacus pellentesque aliquam at vel odio. Etiam lacinia, neque nec semper accumsan, orci tortor ultricies augue, at volutpat eros lacus sit amet turpis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras condimentum dignissim tempor. Suspendisse potenti. Quisque lobortis eleifend augue, eget porttitor leo molestie ac.
-                
-                Ut volutpat mauris risus, eu suscipit ante placerat nec. Sed a auctor ipsum. Maecenas scelerisque erat in diam vulputate condimentum. Pellentesque sed sem sed sapien pellentesque placerat. Praesent faucibus in erat non elementum. Phasellus ac porttitor dui. In tincidunt quis purus in tincidunt.
-                
-                Aliquam interdum nisl et mi blandit ultricies. Mauris laoreet dui purus, vel dignissim dui varius congue. Nunc auctor suscipit mattis. Integer sem lorem, rutrum vitae iaculis nec, tempor quis nunc. Vivamus id aliquet massa. Vivamus dignissim urna vitae nunc maximus vulputate. Cras a enim malesuada, luctus est in, rutrum lorem. Nulla sed pharetra risus, vitae tempus felis. Nulla at euismod risus, ut rutrum risus. Vivamus sagittis a tortor a feugiat. Pellentesque tempor at ligula rutrum suscipit. Aliquam tortor neque, ornare ornare posuere ac, rutrum ac tortor.
-                
-                Nulla ut justo id justo fermentum vehicula et vel libero. Vestibulum ut dui odio. Donec vitae fermentum urna, ut blandit sapien. Nunc nisi magna, accumsan a tincidunt nec, aliquam et metus. Fusce bibendum ligula ex, quis aliquet odio molestie id. Nullam pulvinar dictum ex. Sed interdum velit et mattis dignissim. Suspendisse semper viverra enim quis semper. Proin semper sem leo, eget rutrum ipsum aliquet at.
-                
-                Pellentesque dui augue, venenatis id hendrerit vitae, feugiat sit amet neque. Nulla at lectus eget diam vehicula malesuada a a mauris. Maecenas eu tristique lacus. Phasellus vitae vehicula dolor, vitae hendrerit diam. Maecenas lacus justo, cursus eget tristique non, tempor eu mi. Nam enim sapien, elementum vel fermentum eu, dignissim vel sem. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur dignissim sit amet erat non luctus.
-                
-                In venenatis leo eget tellus tempor, vitae commodo odio posuere. Duis sit amet lacus rutrum enim imperdiet feugiat. Cras sed mi dignissim, commodo lectus at, hendrerit quam. Sed at urna vitae dolor finibus vulputate. Nulla facilisi. Morbi mauris velit, convallis ac efficitur sit amet, pretium non enim. Quisque accumsan ornare purus, vel aliquet libero facilisis nec. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Maecenas lobortis fringilla dapibus. Mauris condimentum nec ipsum a sodales. Mauris vitae est lectus. Morbi consectetur aliquet turpis, sit amet fermentum diam posuere vitae. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla porttitor vehicula purus, sit amet tincidunt libero tristique vel. Fusce vel urna tortor.
+                <div class="option_block">
+                    <p class="title_block">Image Options</p>
+                    <table>
+                        <tr>
+                            <td>Size presets</td>
+                            <td><select id="preset"><option value="2160">2160p (3840 x 2160)</option><option value="1440">1440p (2560 x 1440)</option><option value="1080" selected>1080p (1920 x 1080)</option><option value="720">720p (1280 x 720)</option><option value="480">480p (854 x 480)</option><option value="360">360p (640 x 360)</option><option value="240">240p (426 x 240)</option></select></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Width</td>
+                            <td><input id="width" type="number" min="1" max="9999", step="1" value="1920" sendOnChange></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Height</td>
+                            <td><input id="height" type="number" min="1" max="9999", step="1" value="1080" sendOnChange></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Horizontal flip</td>
+                            <td><input type="checkbox" id="hflip" sendOnChange></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Vertical flip</td>
+                            <td><input type="checkbox" id="vflip" sendOnChange></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Rotation</td>
+                            <!-- <td><select id="rotation" sendOnChange><option value="0">0</option><option value="90">90</option><option value="180">180</option><option value="270">270</option></select></td> -->
+                            <td><input id="rotation" type="range" min="0" max="270" step="90" value="0" sendOnChange></td>
+                            <td><input id="rotation-value" type="text" size="3" value="0" disabled></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="option_block">
+                    <p class="title_block">Image Parameters</p>
+                    <table>
+                        <tr>
+                            <td>Sets the shutter open time [milliseconds] (0 to 200 000)</td>
+                            <td><input id="shutterspeed" type="number" min="0" max="200000" step="1" value="0" sendOnChange></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Set image sharpness (-100 to 100)</td>
+                            <td><input id="sharpness" type="range" min="-100" max="100" step="1" value="0" sendOnChange></td>
+                            <td><input id="sharpness-value" type="number" min="-100" max="100", step="1" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Set image contrast (-100 to 100)</td>
+                            <td><input id="contrast" type="range" min="-100" max="100" step="1" value="0" sendOnChange></td>
+                            <td><input id="contrast-value" type="number" min="-100" max="100", step="1" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Set image brightness (0 to 100)</td>
+                            <td><input id="brightness" type="range" min="0" max="100" step="1" value="50" sendOnChange></td>
+                            <td><input id="brightness-value" type="number" min="0" max="100", step="1" value="50"></td>
+                        </tr>
+                        <tr>
+                            <td>Set image saturation (-100 to 100)</td>
+                            <td><input id="saturation" type="range" min="-100" max="100" step="1" value="0" sendOnChange></td>
+                            <td><input id="saturation-value" type="number" min="-100" max="100", step="1" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Set image ISO (100 to 800)</td>
+                            <td><input id="iso" type="range" min="100" max="800" step="1" value="800" sendOnChange></td>
+                            <td><input id="iso-value" type="number" min="100" max="800", step="1" value="800"></td>
+                        </tr>
+                        <tr>
+                            <td>Turn on video stabilization</td>
+                            <td><input type="checkbox" id="stabilization" sendOnChange></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Set EV compensation (-10 to 10)</td>
+                            <td><input id="evcompensation" type="range" min="-10" max="10" step="1" value="0" sendOnChange></td>
+                            <td><input id="evcompensation-value" type="number" min="-10" max="10", step="1" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Set exposure mode</td>
+                            <td><select id="exposure" sendOnChange><option value="off">off</option><option value="auto" selected>auto</option><option value="night">night</option><option value="nightpreview">nightpreview</option><option value="backlight">backlight</option><option value="spotlight">spotlight</option><option value="sports">sports</option><option value="snow">snow</option><option value="beach">beach</option><option value="verylong">verylong</option><option value="fixedfps">fixedfps</option><option value="antishake">antishake</option><option value="fireworks">fireworks</option></select>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Set analog gain (0 to 12.0)</td>
+                            <td><input id="analoggain" type="range" min="0" max="12" step="0.1" value="1" sendOnChange></td>
+                            <td><input id="analoggain-value" type="number" min="0" max="12" step="0.1" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>Set digital gain (0 to 64.0)</td>
+                            <td><input id="digitalgain" type="range" min="0" max="64" step="0.1" value="1" sendOnChange></td>
+                            <td><input id="digitalgain-value" type="number" min="0" max="64" step="0.1" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>Set Automatic White Balance (AWB) mode </td>
+                            <td><select id="awb" sendOnChange><option value="off">off</option><option value="auto" selected>auto</option><option value="sun">sun</option><option value="cloud">cloud</option><option value="shade">shade</option><option value="tungsten">tungsten</option><option value="fluorescent">fluorescent</option><option value="incandescent">incandescent</option><option value="flash">flash</option><option value="horizon">horizon</option><option value="greyworld">greyworld</option></select></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Sets blue and red gains (0 to 10.0)</td>
+                            <td><input id="awbblue" type="range" min="0" max="10" step="0.1" value="1" sendOnChange><br/><input id="awbred" type="range" min="0" max="10" step="0.1" value="1"></td>
+                            <td><input id="awbblue-value" type="number" min="0" max="10" step="0.1" value="1"><br/><input id="awbred-value" type="number" min="0" max="10" step="0.1" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>Set image effect</td>
+                            <td><select id="effect" sendOnChange><option value="none">none</option><option value="negative">negative</option><option value="solarise">solarise</option><option value="sketch">sketch</option><option value="denoise">denoise</option><option value="emboss">emboss</option><option value="oilpaint">oilpaint</option><option value="hatch">hatch</option><option value="gpen">gpen</option><option value="pastel">pastel</option><option value="watercolour">watercolour</option><option value="film">film</option><option value="blur">blur</option><option value="saturation">saturation</option><option value="colourswap">colourswap</option><option value="washedout">washedout</option><option value="posterise">posterise</option><option value="colourpoint">colourpoint</option><option value="colourbalance">colourbalance</option><option value="cartoon">cartoon</option></select></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Set metering mode</td>
+                            <td><select id="metering" sendOnChange><option value="average">average</option><option value="spot">spot</option><option value="backlit">backlit</option><option value="matrix">matrix</option></select></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Set Dynamic Range Compression (DRC) Level</td>
+                            <td><select id="drc" sendOnChange><option value="off">off</option><option value="low">low</option><option value="med">med</option><option value="high">high</option></select></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <div id="spacer_container"><div unselectable="on" class="unselectable">&#11837;</div></div>
             <div id="right_container">
-                Morbi sagittis dui at mauris faucibus fringilla. Donec ac dolor egestas justo laoreet semper. Integer vitae hendrerit turpis. Nulla facilisi. Pellentesque ut massa nisi. Integer in sapien et enim viverra sagittis. Morbi cursus consequat tortor a facilisis. Phasellus blandit ex et odio aliquam mattis. Suspendisse a egestas eros. Sed sit amet est in diam auctor consequat fermentum in felis. Quisque eget venenatis metus, non malesuada quam. Donec pretium ex ut dui varius, finibus ornare nibh aliquam. Sed posuere sem ut erat malesuada, at varius ante euismod. Morbi vestibulum consectetur commodo.
-
-Phasellus eget diam sed tortor viverra malesuada tincidunt nec nibh. Vestibulum sit amet fringilla nisl. Proin non accumsan lectus. Cras vitae dui tempor, eleifend enim quis, congue nulla. Nulla a eros condimentum, maximus orci id, sodales tellus. Donec vulputate ultricies mi ut commodo. Mauris vitae metus at magna venenatis interdum. Nulla quis viverra odio. Vivamus erat ligula, porta vitae iaculis eget, varius eu lectus.
-
-Aliquam magna lacus, fermentum nec iaculis eget, imperdiet volutpat augue. Vestibulum molestie augue ut lectus tempus varius eleifend vel nisl. Maecenas rhoncus et felis at malesuada. Donec in luctus neque. Praesent sed sapien non dui venenatis gravida nec a lacus. Cras iaculis gravida porta. Nunc nec sagittis lorem. Curabitur luctus tellus in rutrum semper.
-
-Fusce vel tincidunt nisl, vel porta turpis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis tempor aliquam vehicula. Ut rhoncus laoreet est nec posuere. Nulla auctor consectetur tortor eu congue. Sed rhoncus neque eget congue pharetra. Donec varius velit lectus. Integer pharetra leo et erat cursus, ac eleifend magna maximus. Duis id dictum arcu. Praesent feugiat turpis nec euismod cursus. Curabitur aliquam aliquam nibh a pretium. Suspendisse efficitur est aliquet nunc finibus ornare.
-
-Etiam non molestie elit. Mauris risus massa, posuere quis augue id, rhoncus imperdiet eros. Aliquam facilisis ullamcorper leo. Interdum et malesuada fames ac ante ipsum primis in faucibus. Duis nec varius nisi, at molestie eros. Cras commodo ullamcorper sodales. Cras viverra tempus leo, sed eleifend augue tempor vel. Donec vel consequat mi. Aliquam erat volutpat.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel urna eget orci finibus vulputate quis in mauris. Ut maximus viverra neque eget tempus. Cras scelerisque turpis vitae pharetra sodales. Suspendisse potenti. Vestibulum nibh diam, ultrices malesuada hendrerit eu, placerat id justo. Aliquam vitae blandit nulla, efficitur tincidunt lacus. Pellentesque rutrum pharetra tortor, vitae mollis turpis placerat ac. Suspendisse justo diam, viverra eu orci at, ullamcorper interdum risus. Pellentesque et diam enim. Maecenas pharetra sem et diam suscipit, vel viverra mi lobortis. Sed eu orci eu est posuere elementum quis in tellus.
-
-Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam a sem eu odio suscipit vulputate. Aliquam faucibus interdum lectus nec laoreet. Maecenas felis magna, varius a consectetur in, condimentum ac ipsum. Quisque vitae aliquam leo. Curabitur eleifend enim ac nibh auctor, id maximus mi posuere. Nulla volutpat ipsum ac metus aliquet, a condimentum magna viverra. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eros sapien, efficitur nec nisi ut, rutrum lobortis nibh. Quisque id velit laoreet, fringilla lacus in, ornare nisi.
-
-Curabitur hendrerit mi nec nibh facilisis, non semper turpis tempor. Aenean pulvinar mauris quis nisi imperdiet, sit amet convallis lacus tincidunt. Proin porttitor mauris nec metus accumsan maximus. Cras a tellus metus. Integer lobortis nulla semper, varius risus vel, bibendum ex. Donec laoreet felis dolor, vulputate sollicitudin dolor luctus sed. In eu velit id dolor sagittis pulvinar bibendum a orci.
-
-Curabitur porttitor varius ultrices. Vestibulum ultricies varius neque, eu aliquet purus varius sit amet. Nullam nec velit at velit tempor ullamcorper quis at risus. Etiam interdum arcu laoreet eros iaculis egestas eget ut erat. Curabitur in odio nec ipsum efficitur vehicula dapibus sit amet nibh. Vestibulum aliquet lectus quis nisi fermentum consequat. Sed gravida volutpat bibendum. Sed malesuada non velit pharetra feugiat. Maecenas luctus, lorem et cursus vehicula, lectus lorem ullamcorper est, et venenatis ligula nisl quis diam.
             </div>
         </div>
 
         <script>
             init_base();
+
         </script>
     </body>
 </html>
