@@ -12,6 +12,8 @@ async fn main() -> std::io::Result<()> {
 
     let data = web::Data::new( Mutex::new(RpiCam::new()));
 
+    println!("Start server on address : 0.0.0.0:8080");
+
     HttpServer::new(move || {
         App::new()
             .app_data(data.clone())
@@ -41,7 +43,7 @@ async fn main() -> std::io::Result<()> {
             .service(routes::set_drc)
             .service(fs::Files::new("/", "static").index_file("index.html"))
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
