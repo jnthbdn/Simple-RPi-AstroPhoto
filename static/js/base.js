@@ -167,7 +167,7 @@ function load_config(){
         return;
     }
 
-    if( config == false ){ return; }
+    if( config == false || config == null ){ return; }
 
 
     document.querySelectorAll("[sendonchange]").forEach( (elem) => {

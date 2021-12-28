@@ -131,3 +131,17 @@ input[type="range"]{
         font-variant: small-caps;
         font-size: 1.2em;
     }
+
+
+#right_container_content{
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
+    text-align: center;
+}
+
+#right_container_content img{
+    width: 100%;
+}
