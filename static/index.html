@@ -133,15 +133,24 @@
                         </tr>
                     </table>
                 </div>
+                <div class="option_block">
+                    <p class="title_block">Options</p>
+                    <button class="danger-button" onclick="reset_config()">Reset all parameters</button>
+                    <button class="primary-button">RESET CONFIGURATION</button>
+                    <button class="">RESET CONFIGURATION</button>
+                </div>
             </div>
             <div id="spacer_container"><div unselectable="on" class="unselectable">&#11837;</div></div>
             <div id="right_container">
+                <img id="preview" src=""/>
             </div>
         </div>
 
         <script>
             init_base();
 
+            // setInterval( () => refresh_preview("preview"), 100);
+            refresh_preview("preview");
         </script>
     </body>
 </html>
