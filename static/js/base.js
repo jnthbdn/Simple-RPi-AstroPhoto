@@ -1,4 +1,5 @@
 let panelContainer;
+let default_config = {};
 
 function evt_change(elem, targetID){
     let field = document.getElementById(targetID);
@@ -105,9 +106,14 @@ function send_data(id){
     let elem = document.getElementById(id);
     let value = null;
 
+    if( !elem ){
+        console.error(`'${id}' element not found !`);
+        return;
+    }
+
     switch(elem.type){
         case "checkbox":
-            value = elem.checked ? 1 : 0;
+            value = elem.checked ? "true" : "false";
             break;
 
         case "range":
@@ -120,7 +126,82 @@ function send_data(id){
             break;
     }
 
-    console.log(`Send data of '${id}' (${elem.type}) with value '${value}'`)
+    fetch(`/${id}/${value}`, {method: "POST"})
+        .then( (response) => response.text() )
+        .then( (response) => console.log(response))
+        .catch( (error) => console.error(`Fetch error [/${id}/${value}] : ${error}`));
+
+    save_config();
+}
+
+function save_config(saveOnLocalStorage = true){
+
+    let config = {};
+
+    document.querySelectorAll("[sendonchange]").forEach( (elem) => {
+        
+        if(elem.type == "checkbox"){
+            config[elem.id] = elem.checked;
+        }
+        else{
+            config[elem.id] = elem.value;
+        }
+
+    });
+
+    if(saveOnLocalStorage)
+        localStorage.setItem("config", JSON.stringify(config));
+    else
+        return config;
+}
+
+function load_config(){
+
+    let rawConfig = localStorage.getItem("config");
+    let config;
+
+    try{
+        config = JSON.parse(rawConfig);
+    }
+    catch{
+        return;
+    }
+
+    if( config == false ){ return; }
+
+
+    document.querySelectorAll("[sendonchange]").forEach( (elem) => {
+        
+        if( elem.id in config )
+        {    
+            switch( elem.type ){
+                case "range":
+                    elem.value = config[elem.id];
+                    document.getElementById(elem.id + "-value").value = config[elem.id];
+                    break;
+
+                case "checkbox":
+                    elem.checked = config[elem.id];
+                    break;
+
+                default:
+                    elem.value = config[elem.id];
+                    break;
+            }
+
+            send_data(elem.id);
+        }
+    });
+}
+
+function reset_config(){
+
+    if(!confirm("Reset ALL the parameters? This action cannot be undone!")){
+        return;
+    }
+
+    localStorage.setItem("config", JSON.stringify(default_config));
+    load_config();
 }
 
 function init_base(){
@@ -128,25 +209,42 @@ function init_base(){
 
 
     add_preset_event("preset", "width", "height");
-
-    add_event_slider("rotation", 0);
-    add_event_slider("sharpness", 0);
-    add_event_slider("contrast", 0);
-    add_event_slider("brightness", 50);
-    add_event_slider("saturation", 0);
-    add_event_slider("iso", 800);
-    add_event_slider("evcompensation", 0);
-
-    add_event_slider("awbblue", 1);
-    add_event_slider("awbred", 1);
-    add_event_slider("digitalgain", 1);
-    add_event_slider("analoggain", 1);
-
     awb_gain_only_off("awb", "awbblue", "awbred");
+
     document.getElementById("awb").addEventListener( "input", (evt) => awb_gain_only_off("awb", "awbblue", "awbred"));  
 
     document.querySelectorAll("[sendonchange]").forEach( (elem) => {
-        elem.addEventListener("input", (evt) => {send_data(evt.target.id)});
+
+        if( elem.type == "range" ){
+            add_event_slider(elem.id, elem.value);
+        }
+
+        if( elem.type == "text")
+            elem.addEventListener("input", (evt) => {send_data(evt.target.id)});
+        else
+            elem.addEventListener("change", (evt) => {send_data(evt.target.id)});
     });
 
+
+    default_config = save_config(false);
+    load_config();
+}
+
+function refresh_preview(preview_id){
+    var date = new Date();
+    var url = `/img/preview.jpg?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
+
+    fetch(url, {method: "GET"})
+        .then( (response) => {
+            if(response.status == 200 ){
+                document.getElementById(preview_id).src=url;
+                setTimeout(() => refresh_preview(preview_id), 100);
+            }
+            else{
+                setTimeout(() => refresh_preview(preview_id), 1000);
+            }
+        })
+        .catch( (error) => {
+            console.error(`No preview image available`);
+        });
 }
