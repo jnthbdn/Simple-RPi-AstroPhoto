@@ -87,11 +87,17 @@ impl RpiCam{
 
         if self.hflip { command.arg("-hf"); }
         if self.vflip { command.arg("-vf"); }
-        if self.shutter_speed > 0 { command.arg("-ss").arg(self.shutter_speed.to_string()); }
+        if self.shutter_speed > 0 { command.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
         if self.stabilization { command.arg("-vs"); }
         if self.awb == "off" { command.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
 
         println!("{:#?}", command);
+
+        match command.output() {
+            Ok(_) => (),
+            Err(e) => println!("ERROR: {}", e)
+        }
+
 
         Ok(())
     }

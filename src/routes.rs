@@ -8,7 +8,7 @@ type MutexRpiCam = Mutex<RpiCam>;
 
 #[get("/take_photo")]
 pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
-    let pic = data.lock().unwrap().take_pic("plop.jpg");
+    let pic = data.lock().unwrap().take_pic("static/img/preview.jpg");
 
     match pic{
         Ok(_) => HttpResponse::Ok().body("Done !"),

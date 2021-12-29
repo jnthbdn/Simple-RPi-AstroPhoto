@@ -232,12 +232,13 @@ function init_base(){
 
 function refresh_preview(preview_id){
     var date = new Date();
-    var url = `/img/preview.jpg?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
+    var url = "/take_pic"
+    var img_url = `/img/preview.jpg?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
 
     fetch(url, {method: "GET"})
         .then( (response) => {
             if(response.status == 200 ){
-                document.getElementById(preview_id).src=url;
+                document.getElementById(preview_id).src=img_url;
                 setTimeout(() => refresh_preview(preview_id), 100);
             }
             else{
