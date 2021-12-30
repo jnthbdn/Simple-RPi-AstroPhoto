@@ -6,6 +6,16 @@ use crate::rpi_cam::RpiCam;
 type MutexRpiCam = Mutex<RpiCam>;
 
 
+#[get("/preview")]
+pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
+    let pic = data.lock().unwrap().take_pic_stream();
+
+    match pic{
+        Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
+        Err(s) => HttpResponse::InternalServerError().body(s)
+    }
+}
+
 #[get("/take_photo")]
 pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
     let pic = data.lock().unwrap().take_pic("static/img/preview.jpg");

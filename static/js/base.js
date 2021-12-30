@@ -233,19 +233,24 @@ function init_base(){
 function refresh_preview(preview_id){
     var date = new Date();
     var url = "/take_photo"
-    var img_url = `/img/preview.jpg?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
+    var img_url = `/preview?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
 
-    fetch(url, {method: "GET"})
-        .then( (response) => {
-            if(response.status == 200 ){
-                document.getElementById(preview_id).src=img_url;
-                setTimeout(() => refresh_preview(preview_id), 100);
-            }
-            else{
-                setTimeout(() => refresh_preview(preview_id), 1000);
-            }
-        })
-        .catch( (error) => {
-            console.error(`No preview image available`);
-        });
+    document.getElementById(preview_id).src=img_url;
+    setTimeout(() => refresh_preview(preview_id), 100);
+
+
+    // fetch(url, {method: "GET"})
+    //     .then( (response) => {
+    //         if(response.status == 200 ){
+    //             document.getElementById(preview_id).src=img_url;
+    //             setTimeout(() => refresh_preview(preview_id), 100);
+    //         }
+    //         else{
+    //             setTimeout(() => refresh_preview(preview_id), 1000);
+    //         }
+    //     })
+    //     .catch( (error) => {
+    //         console.error(`No preview image available`);
+    //         setTimeout(() => refresh_preview(preview_id), 1000);
+    //     });
 }

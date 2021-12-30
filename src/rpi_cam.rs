@@ -60,13 +60,13 @@ impl RpiCam{
         }
     }
 
+
     pub fn take_pic(&self, filename : &str) -> Result<(), String>{
 
         let mut command = Command::new("raspistill");
                         
         command.arg("-w").arg(self.width.to_string())
                .arg("-h").arg(self.height.to_string())
-               .arg("-o").arg(filename.clone())
                .arg("-rot").arg(self.rotation.to_string())
 
                .arg("-sh").arg(self.sharpness.to_string())
@@ -83,7 +83,10 @@ impl RpiCam{
 
                .arg("-ev").arg(self.ev_compensation.to_string())
                .arg("-ag").arg(self.analog_gain.to_string())
-               .arg("-dg").arg(self.digital_gain.to_string());
+               .arg("-dg").arg(self.digital_gain.to_string())
+               
+               .arg("-t").arg("1")
+               .args(&["-o", filename]);
 
         if self.hflip { command.arg("-hf"); }
         if self.vflip { command.arg("-vf"); }
@@ -91,19 +94,54 @@ impl RpiCam{
         if self.stabilization { command.arg("-vs"); }
         if self.awb == "off" { command.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
 
-        command.arg("-t").arg("1");
-
         println!("{:#?}", command);
 
         match command.output() {
-            Ok(_) => (),
-            Err(e) => println!("ERROR: {}", e)
+            Ok(_) => Ok(()),
+            Err(e) => Err(format!("ERROR: {}", e))
         }
-
-
-        Ok(())
     }
 
+    pub fn take_pic_stream(&self) -> Result<Vec<u8>, String>{
 
+        let mut command = Command::new("raspistill");
+                        
+        command.arg("-w").arg(self.width.to_string())
+               .arg("-h").arg(self.height.to_string())
+               .arg("-rot").arg(self.rotation.to_string())
 
+               .arg("-sh").arg(self.sharpness.to_string())
+               .arg("-co").arg(self.contrast.to_string())
+               .arg("-br").arg(self.brightness.to_string())
+               .arg("-sa").arg(self.saturation.to_string())
+               .arg("-ISO").arg(self.iso.to_string())
+
+               .arg("-ex").arg(self.exposure.clone())
+               .arg("-awb").arg(self.awb.clone())
+               .arg("-ifx").arg(self.effect.clone())
+               .arg("-mm").arg(self.metering.clone())
+               .arg("-drc").arg(self.drc.clone())
+
+               .arg("-ev").arg(self.ev_compensation.to_string())
+               .arg("-ag").arg(self.analog_gain.to_string())
+               .arg("-dg").arg(self.digital_gain.to_string())
+               
+               .arg("-t").arg("1")
+               .args(&["-o", "-"]);
+
+        if self.hflip { command.arg("-hf"); }
+        if self.vflip { command.arg("-vf"); }
+        if self.shutter_speed > 0 { command.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
+        if self.stabilization { command.arg("-vs"); }
+        if self.awb == "off" { command.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
+
+        println!("{:#?}", command);
+
+        let output = command.output();
+
+        match output {
+            Ok(_) => Ok(output.unwrap().stdout),
+            Err(e) => Err(format!("ERROR: {}", e))
+        }
+    }
 }
