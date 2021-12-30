@@ -91,6 +91,8 @@ impl RpiCam{
         if self.stabilization { command.arg("-vs"); }
         if self.awb == "off" { command.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
 
+        command.arg("-t").arg("1");
+
         println!("{:#?}", command);
 
         match command.output() {
