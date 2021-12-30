@@ -18,6 +18,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(data.clone())
             .service(routes::take_photo)
+            .service(routes::preview)
 
             .service(routes::set_width)
             .service(routes::set_height)
