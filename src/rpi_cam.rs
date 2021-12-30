@@ -105,6 +105,7 @@ impl RpiCam{
 
         if self.preview_process.is_some() {
             println!("Preview already started !");
+            return;
         }
 
         self.delete_preview_file();
