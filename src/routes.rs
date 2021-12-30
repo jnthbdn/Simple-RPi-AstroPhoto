@@ -1,18 +1,22 @@
-
 use actix_web::{get, post, web, HttpResponse};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use std::fs;
+
 use crate::rpi_cam::RpiCam;
 
-type MutexRpiCam = Mutex<RpiCam>;
+type MutexRpiCam = Arc<Mutex<RpiCam>>;
 
 
 #[get("/preview")]
-pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
-    let pic = data.lock().unwrap().take_pic_stream();
+pub async fn preview(_data: web::Data<MutexRpiCam>) -> HttpResponse {
+    let pic = fs::read(crate::rpi_cam::FILENAME_PREVIEW);
 
     match pic{
         Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
-        Err(s) => HttpResponse::InternalServerError().body(s)
+        Err(e) => {
+            eprintln!("PREVIEW ERROR : {}", e);
+            HttpResponse::InternalServerError().body(format!("{}", e))
+        }
     }
 }
 

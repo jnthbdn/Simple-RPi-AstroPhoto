@@ -1,5 +1,25 @@
 use std::result::Result;
-use std::process::Command;
+use std::process::{Command, Child, Stdio};
+use std::fs;
+
+struct PreviewProcesses {
+    raspivid: Child,
+    ffmpeg: Child
+}
+
+impl PreviewProcesses {
+    pub fn new(raspivid: Child, ffmpeg: Child) -> PreviewProcesses{
+        PreviewProcesses{
+            raspivid: raspivid,
+            ffmpeg: ffmpeg
+        }
+    }
+
+    pub fn kill(&mut self){
+        self.ffmpeg.kill().expect("Failed to kill ffmpeg process !");
+        self.raspivid.kill().expect("Failed to kill Raspivid process !");
+    }
+}
 
 pub struct RpiCam {
     pub width: u32,
@@ -25,8 +45,14 @@ pub struct RpiCam {
     pub awb_red: f32,
     pub effect: String,
     pub metering: String,
-    pub drc: String
+    pub drc: String,
+
+    preview_process: Option<PreviewProcesses>
+    
 }
+
+
+pub static FILENAME_PREVIEW : &str = "static/img/preview.jpg";
 
 impl RpiCam{
 
@@ -56,43 +82,16 @@ impl RpiCam{
 
             effect: String::from("none"),
             metering: String::from("average"),
-            drc: String::from("off")
+            drc: String::from("off"),
+
+            preview_process: None
         }
     }
 
-
     pub fn take_pic(&self, filename : &str) -> Result<(), String>{
 
-        let mut command = Command::new("raspistill");
-                        
-        command.arg("-w").arg(self.width.to_string())
-               .arg("-h").arg(self.height.to_string())
-               .arg("-rot").arg(self.rotation.to_string())
-
-               .arg("-sh").arg(self.sharpness.to_string())
-               .arg("-co").arg(self.contrast.to_string())
-               .arg("-br").arg(self.brightness.to_string())
-               .arg("-sa").arg(self.saturation.to_string())
-               .arg("-ISO").arg(self.iso.to_string())
-
-               .arg("-ex").arg(self.exposure.clone())
-               .arg("-awb").arg(self.awb.clone())
-               .arg("-ifx").arg(self.effect.clone())
-               .arg("-mm").arg(self.metering.clone())
-               .arg("-drc").arg(self.drc.clone())
-
-               .arg("-ev").arg(self.ev_compensation.to_string())
-               .arg("-ag").arg(self.analog_gain.to_string())
-               .arg("-dg").arg(self.digital_gain.to_string())
-               
-               .arg("-t").arg("1")
-               .args(&["-o", filename]);
-
-        if self.hflip { command.arg("-hf"); }
-        if self.vflip { command.arg("-vf"); }
-        if self.shutter_speed > 0 { command.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
-        if self.stabilization { command.arg("-vs"); }
-        if self.awb == "off" { command.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
+        let mut command = self.generate_raspi_command("raspistill");
+        command.args(&["-o", filename]);
 
         println!("{:#?}", command);
 
@@ -102,11 +101,47 @@ impl RpiCam{
         }
     }
 
-    pub fn take_pic_stream(&self) -> Result<Vec<u8>, String>{
+    pub fn start_preview(&mut self) {
 
-        let mut command = Command::new("raspistill");
+        if self.preview_process.is_some() {
+            println!("Preview already started !");
+        }
+
+        self.delete_preview_file();
+        
+        let mut rpivid = self.generate_raspi_command("raspivid")
+                             .stdout(Stdio::piped())
+                             .args(&["-o", "-"])
+                             .spawn().expect("Failed to start raspivid !");
+
+        let mut ffmpeg = Command::new("ffmpeg")
+                                    .args(&["-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
+                                    .stdin(rpivid.stdout.take().unwrap())
+                                    .spawn();
+
+        match ffmpeg{
+            Ok(_) => self.preview_process = Option::from(PreviewProcesses::new(rpivid, ffmpeg.unwrap())),
+            Err(e) => {
+                rpivid.kill().expect("Failed to kill raspivid !");
+                panic!("Failed to start ffmpeg !\n{}", e);
+            }
+        };
+        
+        // INFO : raspivid -t 0 -o - | ffmpeg -i pipe: -update 1 plop.jpg
+    }
+
+    pub fn stop_preview(&mut self){
+        if self.preview_process.is_some() {
+            println!("Stop preview");
+            self.preview_process.as_mut().unwrap().kill();
+            self.preview_process = None;
+        }
+    }
+
+    fn generate_raspi_command(&self, cmd_name: &str) -> Command{
+        let mut cmd = Command::new(cmd_name);
                         
-        command.arg("-w").arg(self.width.to_string())
+        cmd.arg("-w").arg(self.width.to_string())
                .arg("-h").arg(self.height.to_string())
                .arg("-rot").arg(self.rotation.to_string())
 
@@ -126,22 +161,21 @@ impl RpiCam{
                .arg("-ag").arg(self.analog_gain.to_string())
                .arg("-dg").arg(self.digital_gain.to_string())
                
-               .arg("-t").arg("1")
-               .args(&["-o", "-"]);
+               .arg("-t").arg("1");
 
-        if self.hflip { command.arg("-hf"); }
-        if self.vflip { command.arg("-vf"); }
-        if self.shutter_speed > 0 { command.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
-        if self.stabilization { command.arg("-vs"); }
-        if self.awb == "off" { command.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
+        if self.hflip { cmd.arg("-hf"); }
+        if self.vflip { cmd.arg("-vf"); }
+        if self.shutter_speed > 0 { cmd.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
+        if self.stabilization { cmd.arg("-vs"); }
+        if self.awb == "off" { cmd.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
 
-        println!("{:#?}", command);
+        return cmd;
+    }
 
-        let output = command.output();
-
-        match output {
-            Ok(_) => Ok(output.unwrap().stdout),
-            Err(e) => Err(format!("ERROR: {}", e))
-        }
+    fn delete_preview_file(&self){
+        match fs::remove_file(FILENAME_PREVIEW){
+            Ok(_) => (),
+            Err(e) => eprintln!("{}", e)
+        };
     }
 }

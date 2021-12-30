@@ -236,8 +236,8 @@ function refresh_preview(preview_id){
     var img_url = `/preview?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
 
     document.getElementById(preview_id).src=img_url;
-    setTimeout(() => refresh_preview(preview_id), 100);
-
+    setTimeout(() => refresh_preview(preview_id), 500);
+    
 
     // fetch(url, {method: "GET"})
     //     .then( (response) => {

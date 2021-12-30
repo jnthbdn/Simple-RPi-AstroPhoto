@@ -1,6 +1,6 @@
 use actix_web::{web, App, HttpServer};
 use actix_files as fs;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 pub mod rpi_cam;
 pub mod routes;
@@ -10,13 +10,21 @@ use rpi_cam::RpiCam;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    let data = web::Data::new( Mutex::new(RpiCam::new()));
-
+    
     println!("Start server on address : 0.0.0.0:8080");
 
-    HttpServer::new(move || {
+    let arc_data = Arc::new(Mutex::new(RpiCam::new()));
+    let local_data = arc_data.clone();
+
+    let server = HttpServer::new(move || {
+        let server_data = web::Data::new(arc_data.clone());
+
+        let mut mutex = server_data.lock().unwrap();
+        mutex.start_preview();
+        drop(mutex);
+
         App::new()
-            .app_data(data.clone())
+            .app_data(server_data)
             .service(routes::take_photo)
             .service(routes::preview)
 
@@ -43,8 +51,13 @@ async fn main() -> std::io::Result<()> {
             .service(routes::set_metering)
             .service(routes::set_drc)
             .service(fs::Files::new("/", "static").index_file("index.html"))
-    })
-    .bind("0.0.0.0:8080")?
-    .run()
-    .await
+    });
+    
+    let result = server.bind("0.0.0.0:8080")?
+          .run()
+          .await;
+
+    local_data.lock().unwrap().stop_preview();
+
+    return result;
 }
