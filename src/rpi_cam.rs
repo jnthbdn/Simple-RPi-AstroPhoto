@@ -137,6 +137,11 @@ impl RpiCam{
         }
     }
 
+    pub fn restart_preview(&mut self){
+        self.stop_preview();
+        self.start_preview();
+    }
+
     pub fn check_preview_status(&mut self){
         if self.preview_process.is_none() { return; }
 
@@ -146,8 +151,7 @@ impl RpiCam{
             return;
         }
 
-        self.stop_preview();
-        self.start_preview();
+        self.restart_preview();
     }
 
     fn is_running_pid(pid: u32) -> bool{

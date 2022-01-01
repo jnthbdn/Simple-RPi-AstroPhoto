@@ -73,6 +73,8 @@ pub async fn set_rotation(data: web::Data<MutexRpiCam>, path: web::Path<u32>) ->
     let mut rpi = data.lock().unwrap();
     (*rpi).rotation = *path;
 
+    rpi.restart_preview();
+
     HttpResponse::Ok().body("")
 }
 
