@@ -108,7 +108,7 @@ impl RpiCam{
             return;
         }
 
-        self.delete_preview_file();
+        //self.delete_preview_file();
 
         let mut rpivid = self.generate_raspi_command("raspivid", 0)
                              .args(&["-o", "-"])
@@ -116,7 +116,7 @@ impl RpiCam{
                              .spawn().expect("Failed to start raspivid !");
 
         let ffmpeg = Command::new("ffmpeg")
-                                    .args(&["-hide_banner", "-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
+                                    .args(&["-hide_banner", "-y", "-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
                                     .stdin(rpivid.stdout.take().unwrap())
                                     .spawn();
 
@@ -206,10 +206,10 @@ impl RpiCam{
         return cmd;
     }
 
-    fn delete_preview_file(&self){
-        match fs::remove_file(FILENAME_PREVIEW){
-            Ok(_) => (),
-            Err(e) => eprintln!("Delete Preview file : {}", e)
-        };
-    }
+    // fn delete_preview_file(&self){
+    //     match fs::remove_file(FILENAME_PREVIEW){
+    //         Ok(_) => (),
+    //         Err(e) => eprintln!("Delete Preview file : {}", e)
+    //     };
+    // }
 }
