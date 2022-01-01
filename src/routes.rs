@@ -8,9 +8,10 @@ type MutexRpiCam = Arc<Mutex<RpiCam>>;
 
 
 #[get("/preview")]
-pub async fn preview(_data: web::Data<MutexRpiCam>) -> HttpResponse {
-    let pic = fs::read(crate::rpi_cam::FILENAME_PREVIEW);
+pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
+    data.lock().unwrap().check_preview_status();
 
+    let pic = fs::read(crate::rpi_cam::FILENAME_PREVIEW);
     match pic{
         Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
         Err(e) => {

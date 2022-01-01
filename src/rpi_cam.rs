@@ -127,8 +127,6 @@ impl RpiCam{
                 panic!("Failed to start ffmpeg !\n{}", e);
             }
         };
-        
-        // INFO : raspivid -t 0 -o - | ffmpeg -i pipe: -update 1 plop.jpg
     }
 
     pub fn stop_preview(&mut self){
@@ -137,6 +135,36 @@ impl RpiCam{
             self.preview_process.as_mut().unwrap().kill();
             self.preview_process = None;
         }
+    }
+
+    pub fn check_preview_status(&mut self){
+        if self.preview_process.is_none() { return; }
+
+        let processes = self.preview_process.as_mut().unwrap();
+
+        if RpiCam::is_running_pid(processes.ffmpeg.id()) && RpiCam::is_running_pid(processes.raspivid.id()) {
+            return;
+        }
+
+        self.stop_preview();
+        self.start_preview();
+    }
+
+    fn is_running_pid(pid: u32) -> bool{
+        let pid = Command::new("ps").args(&["--pid", &(pid.to_string()), "-o", "stat="]).output();
+
+        if pid.is_err() {
+            eprintln!("IS_RUNNING_PID ERROR : {}", pid.unwrap_err());
+            return false;
+        }
+
+        let output = pid.unwrap();
+
+        if output.status.code().is_none() || output.status.code().unwrap() != 0 || output.stdout.len() == 0 { return false; }
+
+        let first_letter = output.stdout[0] as char;
+
+        return first_letter == 'S' || first_letter == 'R';
     }
 
     fn generate_raspi_command(&self, cmd_name: &str, timeout: u8) -> Command{
@@ -174,48 +202,10 @@ impl RpiCam{
         return cmd;
     }
 
-    #[allow(dead_code)]
-    fn generate_raspi_command_string(&self, cmd_name: &str, timeout: u8) -> String {
-
-        let mut cmd = String::from(cmd_name);
-        
-        cmd += " ";
-        cmd += &format!("-w {} ", self.width);
-
-            cmd += &format!("-h {} ", self.height.to_string());
-            cmd += &format!("-rot {} ", self.rotation.to_string());
-
-            cmd += &format!("-sh {} ", self.sharpness.to_string());
-            cmd += &format!("-co {} ", self.contrast.to_string());
-            cmd += &format!("-br {} ", self.brightness.to_string());
-            cmd += &format!("-sa {} ", self.saturation.to_string());
-            cmd += &format!("-ISO {} ", self.iso.to_string());
-
-            cmd += &format!("-ex {} ", self.exposure.clone());
-            cmd += &format!("-awb {} ", self.awb.clone());
-            cmd += &format!("-ifx {} ", self.effect.clone());
-            cmd += &format!("-mm {} ", self.metering.clone());
-            cmd += &format!("-drc {} ", self.drc.clone());
-
-            cmd += &format!("-ev {} ", self.ev_compensation.to_string());
-            cmd += &format!("-ag {} ", self.analog_gain.to_string());
-            cmd += &format!("-dg {} ", self.digital_gain.to_string());
-            
-            cmd += &format!("-t {} ", timeout);
-
-        if self.hflip { cmd += "-hf "; }
-        if self.vflip { cmd += "-vf "; }
-        if self.shutter_speed > 0 { cmd += &format!("-ss {} ", (self.shutter_speed * 1000).to_string()); }
-        if self.stabilization { cmd += "-vs "; }
-        if self.awb == "off" { cmd += &format!("-awbg {},{} ", self.awb_blue, self.awb_red); }
-
-        return cmd;
-    }
-
     fn delete_preview_file(&self){
         match fs::remove_file(FILENAME_PREVIEW){
             Ok(_) => (),
-            Err(e) => eprintln!("{}", e)
+            Err(e) => eprintln!("Delete Preview file : {}", e)
         };
     }
 }
