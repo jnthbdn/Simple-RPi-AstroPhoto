@@ -1,2 +1,5 @@
 Cargo.lock
 target/
+
+static/capture/*
+!static/capture/index.html

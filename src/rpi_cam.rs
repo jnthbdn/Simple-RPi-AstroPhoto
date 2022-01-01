@@ -32,7 +32,7 @@ pub struct RpiCam {
 }
 
 
-pub static FILENAME_PREVIEW : &str = "static/img/preview.jpg";
+pub static FILENAME_PREVIEW : &str = "static/capture/preview.jpg";
 
 impl RpiCam{
 
@@ -90,6 +90,7 @@ impl RpiCam{
         self.preview_process = Some(self.generate_raspi_command("raspistill", 0)
                                 .args(&["-tl", "500", "-o", FILENAME_PREVIEW])
                                 .stdout(Stdio::null())
+                                .stderr(Stdio::null())
                                 .spawn()
                                 .expect("Failed to start rpistill"));
 

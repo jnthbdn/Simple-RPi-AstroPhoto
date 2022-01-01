@@ -22,7 +22,7 @@ pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
 
 #[get("/take_photo")]
 pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
-    let pic = data.lock().unwrap().take_pic("static/img/preview.jpg");
+    let pic = data.lock().unwrap().take_pic("static/capture/capture.jpg");
 
     match pic{
         Ok(_) => HttpResponse::Ok().body("Done !"),
