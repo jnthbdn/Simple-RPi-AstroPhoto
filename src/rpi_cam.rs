@@ -112,7 +112,7 @@ impl RpiCam{
         let (pipe_reader, pipe_writer) = os_pipe::pipe().expect("Unable to create pipes");
 
         let mut rpivid = self.generate_raspi_command("raspivid", 0)
-                             .args(&["-o", "-"])
+                             .args(&["-fps", "2", "-o", "-"])
                              .stdout(pipe_writer.try_clone().expect("Fail to clone pipe writer"))
                              .spawn().expect("Failed to start raspivid !");
 
@@ -156,7 +156,7 @@ impl RpiCam{
         
 
         let rpivid = self.generate_raspi_command("raspivid", 0)
-                            .args(&["-o", "-"])
+                            .args(&["-fps", "2", "-o", "-"])
                             .stdout(pipe_writer.unwrap())
                             .spawn().expect("Failed to start raspivid !");
 
