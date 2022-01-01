@@ -1,27 +1,5 @@
 use std::result::Result;
-use std::process::{Command, Child};
-//use os_pipe::PipeWriter;
-
-// struct PreviewProcesses {
-//     raspivid: Child,
-//     ffmpeg: Child,
-//     pipe_writer: PipeWriter
-// }
-
-// impl PreviewProcesses {
-//     pub fn new(raspivid: Child, ffmpeg: Child, pipe_write: PipeWriter) -> PreviewProcesses{
-//         PreviewProcesses{
-//             raspivid: raspivid,
-//             ffmpeg: ffmpeg,
-//             pipe_writer: pipe_write
-//         }
-//     }
-
-//     pub fn kill(&mut self){
-//         self.ffmpeg.kill().expect("Failed to kill ffmpeg process !");
-//         self.raspivid.kill().expect("Failed to kill Raspivid process !");
-//     }
-// }
+use std::process::{Command, Child, Stdio};
 
 pub struct RpiCam {
     pub width: u32,
@@ -109,28 +87,9 @@ impl RpiCam{
             return;
         }
 
-        // let (pipe_reader, pipe_writer) = os_pipe::pipe().expect("Unable to create pipes");
-
-        // let mut rpivid = self.generate_raspi_command("raspivid", 0)
-        //                      .args(&["-fps", "2", "-o", "-"])
-        //                      .stdout(pipe_writer.try_clone().expect("Fail to clone pipe writer"))
-        //                      .spawn().expect("Failed to start raspivid !");
-
-        // let ffmpeg = Command::new("ffmpeg")
-        //                             .args(&["-hide_banner", "-y", "-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
-        //                             .stdin(pipe_reader.try_clone().expect("Failed to clone pipe reader"))
-        //                             .spawn();
-
-        // match ffmpeg{
-        //     Ok(_) => self.preview_process = Option::from(PreviewProcesses::new(rpivid, ffmpeg.unwrap(), pipe_writer)),
-        //     Err(e) => {
-        //         rpivid.kill().expect("Failed to kill raspivid !");
-        //         panic!("Failed to start ffmpeg !\n{}", e);
-        //     }
-        // };
-
         self.preview_process = Some(self.generate_raspi_command("raspistill", 0)
-                                .args(&["-tl", "2000", "-o", FILENAME_PREVIEW])
+                                .args(&["-tl", "500", "-o", FILENAME_PREVIEW])
+                                .stdout(Stdio::null())
                                 .spawn()
                                 .expect("Failed to start rpistill"));
 
@@ -145,61 +104,37 @@ impl RpiCam{
     }
 
     pub fn restart_preview(&mut self){
-
         self.stop_preview();
         self.start_preview();
-
-
-        
-        // let processes = self.preview_process.as_mut().unwrap();
-        // let pipe_writer = Some(processes.pipe_writer.try_clone().expect("Failed to clone pipe writer"));
-        
-                
-        
-        // let processes = self.preview_process.as_mut().unwrap();
-        // processes.raspivid.kill().unwrap_or(());
-        
-
-        // let rpivid = self.generate_raspi_command("raspivid", 0)
-        //                     .args(&["-fps", "2", "-o", "-"])
-        //                     .stdout(pipe_writer.unwrap())
-        //                     .spawn().expect("Failed to start raspivid !");
-
-    
-        // let processes = self.preview_process.as_mut().unwrap();
-        // processes.raspivid = rpivid;
-    
-    
     }
 
     pub fn check_preview_status(&mut self){
         if self.preview_process.is_none() { return; }
 
-        // let processes = self.preview_process.as_mut().unwrap();
 
-        // if RpiCam::is_running_pid(processes.ffmpeg.id()) && RpiCam::is_running_pid(processes.raspivid.id()) {
-        //     return;
-        // }
+        if RpiCam::is_running_pid(self.preview_process.as_mut().unwrap().id()) {
+            return;
+        }
 
-        // self.restart_preview();
+        self.restart_preview();
     }
 
-    // fn is_running_pid(pid: u32) -> bool{
-    //     let pid = Command::new("ps").args(&["--pid", &(pid.to_string()), "-o", "stat="]).output();
+    fn is_running_pid(pid: u32) -> bool{
+        let pid = Command::new("ps").args(&["--pid", &(pid.to_string()), "-o", "stat="]).output();
 
-    //     if pid.is_err() {
-    //         eprintln!("IS_RUNNING_PID ERROR : {}", pid.unwrap_err());
-    //         return false;
-    //     }
+        if pid.is_err() {
+            eprintln!("IS_RUNNING_PID ERROR : {}", pid.unwrap_err());
+            return false;
+        }
 
-    //     let output = pid.unwrap();
+        let output = pid.unwrap();
 
-    //     if output.status.code().is_none() || output.status.code().unwrap() != 0 || output.stdout.len() == 0 { return false; }
+        if output.status.code().is_none() || output.status.code().unwrap() != 0 || output.stdout.len() == 0 { return false; }
 
-    //     let first_letter = output.stdout[0] as char;
+        let first_letter = output.stdout[0] as char;
 
-    //     return first_letter == 'S' || first_letter == 'R';
-    // }
+        return first_letter == 'S' || first_letter == 'R';
+    }
 
     fn generate_raspi_command(&self, cmd_name: &str, timeout: u8) -> Command{
         let mut cmd = Command::new(cmd_name);
