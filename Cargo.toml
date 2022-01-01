@@ -7,3 +7,4 @@ edition = "2021"
 [dependencies]
 actix-web = "3"
 actix-files = "0.5"
+os_pipe = "1.0.0"

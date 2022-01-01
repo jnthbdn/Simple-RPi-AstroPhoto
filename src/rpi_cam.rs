@@ -1,16 +1,19 @@
 use std::result::Result;
-use std::process::{Command, Child, Stdio};
+use std::process::{Command, Child};
+use os_pipe::PipeWriter;
 
 struct PreviewProcesses {
     raspivid: Child,
-    ffmpeg: Child
+    ffmpeg: Child,
+    pipe_writer: PipeWriter
 }
 
 impl PreviewProcesses {
-    pub fn new(raspivid: Child, ffmpeg: Child) -> PreviewProcesses{
+    pub fn new(raspivid: Child, ffmpeg: Child, pipe_write: PipeWriter) -> PreviewProcesses{
         PreviewProcesses{
             raspivid: raspivid,
-            ffmpeg: ffmpeg
+            ffmpeg: ffmpeg,
+            pipe_writer: pipe_write
         }
     }
 
@@ -106,18 +109,20 @@ impl RpiCam{
             return;
         }
 
+        let (pipe_reader, pipe_writer) = os_pipe::pipe().expect("Unable to create pipes");
+
         let mut rpivid = self.generate_raspi_command("raspivid", 0)
                              .args(&["-o", "-"])
-                             .stdout(Stdio::piped())
+                             .stdout(pipe_writer.try_clone().expect("Fail to clone pipe writer"))
                              .spawn().expect("Failed to start raspivid !");
 
         let ffmpeg = Command::new("ffmpeg")
                                     .args(&["-hide_banner", "-y", "-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
-                                    .stdin(rpivid.stdout.take().unwrap())
+                                    .stdin(pipe_reader.try_clone().expect("Failed to clone pipe reader"))
                                     .spawn();
 
         match ffmpeg{
-            Ok(_) => self.preview_process = Option::from(PreviewProcesses::new(rpivid, ffmpeg.unwrap())),
+            Ok(_) => self.preview_process = Option::from(PreviewProcesses::new(rpivid, ffmpeg.unwrap(), pipe_writer)),
             Err(e) => {
                 rpivid.kill().expect("Failed to kill raspivid !");
                 panic!("Failed to start ffmpeg !\n{}", e);
@@ -133,8 +138,33 @@ impl RpiCam{
     }
 
     pub fn restart_preview(&mut self){
-        self.stop_preview();
-        self.start_preview();
+        // self.stop_preview();
+        // self.start_preview();
+
+        if self.preview_process.is_none() {
+            self.start_preview();
+        }
+
+        
+        let processes = self.preview_process.as_mut().unwrap();
+        let pipe_writer = Some(processes.pipe_writer.try_clone().expect("Failed to clone pipe writer"));
+        
+                
+        
+        let processes = self.preview_process.as_mut().unwrap();
+        processes.raspivid.kill().unwrap_or(());
+        
+
+        let rpivid = self.generate_raspi_command("raspivid", 0)
+                            .args(&["-o", "-"])
+                            .stdout(pipe_writer.unwrap())
+                            .spawn().expect("Failed to start raspivid !");
+
+    
+        let processes = self.preview_process.as_mut().unwrap();
+        processes.raspivid = rpivid;
+    
+    
     }
 
     pub fn check_preview_status(&mut self){
