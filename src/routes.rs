@@ -15,7 +15,15 @@ pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
         Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
         Err(e) => {
             eprintln!("PREVIEW ERROR : {}", e);
-            HttpResponse::InternalServerError().body(format!("{}", e))
+
+            let pic = fs::read("static/img/default-preview.jpg");
+            match pic {
+                Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
+                Err(e) =>{
+                    eprintln!("DEFAULT PREVIEW ERROR : {}", e);
+                    return HttpResponse::InternalServerError().body(format!("{}", e));
+                }
+            }
         }
     }
 }
