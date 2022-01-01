@@ -1,6 +1,5 @@
 use std::result::Result;
 use std::process::{Command, Child, Stdio};
-use std::fs;
 
 struct PreviewProcesses {
     raspivid: Child,
@@ -108,8 +107,6 @@ impl RpiCam{
             return;
         }
 
-        //self.delete_preview_file();
-
         let mut rpivid = self.generate_raspi_command("raspivid", 0)
                              .args(&["-o", "-"])
                              .stdout(Stdio::piped())
@@ -205,11 +202,4 @@ impl RpiCam{
 
         return cmd;
     }
-
-    // fn delete_preview_file(&self){
-    //     match fs::remove_file(FILENAME_PREVIEW){
-    //         Ok(_) => (),
-    //         Err(e) => eprintln!("Delete Preview file : {}", e)
-    //     };
-    // }
 }
