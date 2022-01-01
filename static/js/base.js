@@ -219,10 +219,12 @@ function init_base(){
             add_event_slider(elem.id, elem.value);
         }
 
-        if( elem.type == "text")
+        if( elem.type == "text" || elem.type == "number"){
             elem.addEventListener("input", (evt) => {send_data(evt.target.id)});
-        else
+        }
+        else{
             elem.addEventListener("change", (evt) => {send_data(evt.target.id)});
+        }
     });
 
 
@@ -237,20 +239,4 @@ function refresh_preview(preview_id){
 
     document.getElementById(preview_id).src=img_url;
     setTimeout(() => refresh_preview(preview_id), 500);
-    
-
-    // fetch(url, {method: "GET"})
-    //     .then( (response) => {
-    //         if(response.status == 200 ){
-    //             document.getElementById(preview_id).src=img_url;
-    //             setTimeout(() => refresh_preview(preview_id), 100);
-    //         }
-    //         else{
-    //             setTimeout(() => refresh_preview(preview_id), 1000);
-    //         }
-    //     })
-    //     .catch( (error) => {
-    //         console.error(`No preview image available`);
-    //         setTimeout(() => refresh_preview(preview_id), 1000);
-    //     });
 }
