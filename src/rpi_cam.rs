@@ -116,7 +116,7 @@ impl RpiCam{
                              .spawn().expect("Failed to start raspivid !");
 
         let ffmpeg = Command::new("ffmpeg")
-                                    .args(&["-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
+                                    .args(&["--hide_banner", "-i", "pipe:", "-update", "1", FILENAME_PREVIEW])
                                     .stdin(rpivid.stdout.take().unwrap())
                                     .spawn();
 
