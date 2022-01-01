@@ -103,7 +103,6 @@ impl RpiCam{
     pub fn start_preview(&mut self) {
 
         if self.preview_process.is_some() {
-            println!("Preview already started !");
             return;
         }
 
@@ -128,7 +127,6 @@ impl RpiCam{
 
     pub fn stop_preview(&mut self){
         if self.preview_process.is_some() {
-            println!("Stop preview");
             self.preview_process.as_mut().unwrap().kill();
             self.preview_process = None;
         }
