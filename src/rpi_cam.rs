@@ -90,7 +90,7 @@ impl RpiCam{
 
     pub fn take_pic(&self, filename : &str) -> Result<(), String>{
 
-        let mut command = self.generate_raspi_command("raspistill");
+        let mut command = self.generate_raspi_command("raspistill", 1);
         command.args(&["-o", filename]);
 
         println!("{:#?}", command);
@@ -109,10 +109,10 @@ impl RpiCam{
         }
 
         self.delete_preview_file();
-        
-        let mut rpivid = self.generate_raspi_command("raspivid")
-                             .stdout(Stdio::piped())
+
+        let mut rpivid = self.generate_raspi_command("raspivid", 0)
                              .args(&["-o", "-"])
+                             .stdout(Stdio::piped())
                              .spawn().expect("Failed to start raspivid !");
 
         let ffmpeg = Command::new("ffmpeg")
@@ -139,36 +139,75 @@ impl RpiCam{
         }
     }
 
-    fn generate_raspi_command(&self, cmd_name: &str) -> Command{
+    fn generate_raspi_command(&self, cmd_name: &str, timeout: u8) -> Command{
         let mut cmd = Command::new(cmd_name);
-                        
+        
+        
         cmd.arg("-w").arg(self.width.to_string())
-               .arg("-h").arg(self.height.to_string())
-               .arg("-rot").arg(self.rotation.to_string())
+            .arg("-h").arg(self.height.to_string())
+            .arg("-rot").arg(self.rotation.to_string())
 
-               .arg("-sh").arg(self.sharpness.to_string())
-               .arg("-co").arg(self.contrast.to_string())
-               .arg("-br").arg(self.brightness.to_string())
-               .arg("-sa").arg(self.saturation.to_string())
-               .arg("-ISO").arg(self.iso.to_string())
+            .arg("-sh").arg(self.sharpness.to_string())
+            .arg("-co").arg(self.contrast.to_string())
+            .arg("-br").arg(self.brightness.to_string())
+            .arg("-sa").arg(self.saturation.to_string())
+            .arg("-ISO").arg(self.iso.to_string())
 
-               .arg("-ex").arg(self.exposure.clone())
-               .arg("-awb").arg(self.awb.clone())
-               .arg("-ifx").arg(self.effect.clone())
-               .arg("-mm").arg(self.metering.clone())
-               .arg("-drc").arg(self.drc.clone())
+            .arg("-ex").arg(self.exposure.clone())
+            .arg("-awb").arg(self.awb.clone())
+            .arg("-ifx").arg(self.effect.clone())
+            .arg("-mm").arg(self.metering.clone())
+            .arg("-drc").arg(self.drc.clone())
 
-               .arg("-ev").arg(self.ev_compensation.to_string())
-               .arg("-ag").arg(self.analog_gain.to_string())
-               .arg("-dg").arg(self.digital_gain.to_string())
-               
-               .arg("-t").arg("1");
+            .arg("-ev").arg(self.ev_compensation.to_string())
+            .arg("-ag").arg(self.analog_gain.to_string())
+            .arg("-dg").arg(self.digital_gain.to_string())
+            
+            .arg("-t").arg(timeout.to_string());
 
         if self.hflip { cmd.arg("-hf"); }
         if self.vflip { cmd.arg("-vf"); }
         if self.shutter_speed > 0 { cmd.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
         if self.stabilization { cmd.arg("-vs"); }
         if self.awb == "off" { cmd.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
+
+        return cmd;
+    }
+
+    #[allow(dead_code)]
+    fn generate_raspi_command_string(&self, cmd_name: &str, timeout: u8) -> String {
+
+        let mut cmd = String::from(cmd_name);
+        
+        cmd += " ";
+        cmd += &format!("-w {} ", self.width);
+
+            cmd += &format!("-h {} ", self.height.to_string());
+            cmd += &format!("-rot {} ", self.rotation.to_string());
+
+            cmd += &format!("-sh {} ", self.sharpness.to_string());
+            cmd += &format!("-co {} ", self.contrast.to_string());
+            cmd += &format!("-br {} ", self.brightness.to_string());
+            cmd += &format!("-sa {} ", self.saturation.to_string());
+            cmd += &format!("-ISO {} ", self.iso.to_string());
+
+            cmd += &format!("-ex {} ", self.exposure.clone());
+            cmd += &format!("-awb {} ", self.awb.clone());
+            cmd += &format!("-ifx {} ", self.effect.clone());
+            cmd += &format!("-mm {} ", self.metering.clone());
+            cmd += &format!("-drc {} ", self.drc.clone());
+
+            cmd += &format!("-ev {} ", self.ev_compensation.to_string());
+            cmd += &format!("-ag {} ", self.analog_gain.to_string());
+            cmd += &format!("-dg {} ", self.digital_gain.to_string());
+            
+            cmd += &format!("-t {} ", timeout);
+
+        if self.hflip { cmd += "-hf "; }
+        if self.vflip { cmd += "-vf "; }
+        if self.shutter_speed > 0 { cmd += &format!("-ss {} ", (self.shutter_speed * 1000).to_string()); }
+        if self.stabilization { cmd += "-vs "; }
+        if self.awb == "off" { cmd += &format!("-awbg {},{} ", self.awb_blue, self.awb_red); }
 
         return cmd;
     }
