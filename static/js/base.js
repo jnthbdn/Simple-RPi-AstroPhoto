@@ -1,3 +1,4 @@
+let modal;
 let panelContainer;
 let default_config = {};
 let is_preview_enable = true;
@@ -207,6 +208,7 @@ function reset_config(){
 
 function init_base(){
     panelContainer = new TwoPanelContainer("left_container", "right_container", "spacer_container");
+    modal = new Modal("modal", "modal_title", "modal_text");
 
 
     add_preset_event("preset", "width", "height");
@@ -241,11 +243,35 @@ function refresh_preview(preview_id){
     if( !is_preview_enable ){ return; }
 
     var date = new Date();
-    var url = "/take_photo"
     var img_url = `/preview?id=${date.getSeconds()}-${date.getMilliseconds()}`;
 
     document.getElementById(preview_id).src=img_url;
-    // setTimeout(() => refresh_preview(preview_id), 500);
+}
+
+async function take_photo(){
+    var text = "Taking photo please wait...";
+    var title = "Taking Photo";
+
+    modal.showInfo(title, text);
+
+    try{
+        var resp = await fetch("/take_photo");
+        var body = await resp.text();
+
+        if( resp.ok ){
+            text += `<br/><br/>Success : ${body}`;
+            modal.showInfo(title, text);
+        }
+        else{
+            text += `<br/><br/>Failure : ${resp.status} - ${body}`;
+            modal.showError(title, text);
+        }
+    }
+    catch(e){
+        text += "<br/><br/>Failure : Internal Error.";
+        console.error(e);
+        modal.showError(title, text);
+    }
 }
 
 function toggle_preview(enable){
