@@ -50,34 +50,34 @@ button {
     color: black;
     background-color: #d3d3d3;
 }
-button:hover {
-    background-color: #b3b3b3;
-}
-button:active {
-    background-color: #939393;
-}
+    button:hover {
+        background-color: #b3b3b3;
+    }
+    button:active {
+        background-color: #939393;
+    }
 
 button.danger-button {
     color: white;
     background-color: #f0506e;
 }
-button.danger-button:hover {
-    background-color: #d0304e;
-}
-button.danger-button:active {
-    background-color: #b0102e;
-}
+    button.danger-button:hover {
+        background-color: #d0304e;
+    }
+    button.danger-button:active {
+        background-color: #b0102e;
+    }
 
 button.primary-button {
     color: white;
     background-color: #1e87f0;
 }
-button.primary-button:hover {
-    background-color: #0067d0;
-}
-button.primary-button:active {
-    background-color: #0047b0;
-}
+    button.primary-button:hover {
+        background-color: #0067d0;
+    }
+    button.primary-button:active {
+        background-color: #0047b0;
+    }
 
 
 #left_container {

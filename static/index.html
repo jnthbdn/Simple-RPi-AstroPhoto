@@ -134,10 +134,23 @@
                     </table>
                 </div>
                 <div class="option_block">
-                    <p class="title_block">Options</p>
+                    <p class="title_block">Preview Options</p>
+                    <table>
+                        <tr>
+                            <td>Enable preview :</td>
+                            <td><input type="checkbox" id="enable_preview" checked onchange="toggle_preview(this.checked);"/></td>
+                        </tr>
+                        <tr>
+                            <td>Show crosshair:</td>
+                            <td><input type="checkbox" id="enable_crosshair" onchange="toggle_crosshair(this.checked);"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="option_block">
+                    <p class="title_block">Actions</p>
+                    <button class="primary-button">Take picture</button><button class="primary-button">Take video</button><br/>
+                    <button class="">Open capture folder</button><br/>
                     <button class="danger-button" onclick="reset_config()">Reset all parameters</button>
-                    <button class="primary-button">RESET CONFIGURATION</button>
-                    <button class="">RESET CONFIGURATION</button>
                 </div>
             </div>
             <div id="spacer_container"><div unselectable="on" class="unselectable">&#11837;</div></div>
