@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="css/color.css"/>
 
         <script src="js/container.js"></script>
+        <script src="js/modal.js"></script>
         <script src="js/base.js"></script>
     </head>
 
@@ -154,7 +155,7 @@
                 </div>
                 <div class="option_block">
                     <p class="title_block">Actions</p>
-                    <button class="primary-button">Take picture</button><button class="primary-button">Take video</button><br/>
+                    <button class="primary-button" onclick="take_photo()">Take photo</button><button class="primary-button">Take video</button><br/>
                     <button class="">Open capture folder</button><br/>
                     <button class="danger-button" onclick="reset_config()">Reset all parameters</button>
                 </div>
@@ -164,6 +165,15 @@
                 <div id="right_container_content">
                     <img id="preview" src="" class="fit" />
                 </div>
+            </div>
+        </div>
+
+        <div id="modal" class="danger">
+            <div class="container">
+                <div class="logo"></div>
+                <div class="close" onclick="modal.close()">&#128473;</div>
+                <p id="modal_title" class="title">Un danger !!</p>
+                <p id="modal_text" class="content">Ceci est le text du danger !</p>
             </div>
         </div>
 
