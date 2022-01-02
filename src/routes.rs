@@ -44,6 +44,8 @@ pub async fn set_width(data: web::Data<MutexRpiCam>, path: web::Path<u32>) -> Ht
     let mut rpi = data.lock().unwrap();
     (*rpi).width = *path;
 
+    rpi.restart_preview();
+
     HttpResponse::Ok().body("")
 }
 
@@ -83,6 +85,11 @@ pub async fn set_vflip(data: web::Data<MutexRpiCam>, path: web::Path<bool>) -> H
 #[post("/rotation/{value}")]
 pub async fn set_rotation(data: web::Data<MutexRpiCam>, path: web::Path<u32>) -> HttpResponse {
     
+
+    if *path != 0 && *path != 90 && *path != 180 && *path != 270 {
+        return HttpResponse::BadRequest().body("The Rotation value can only be : 0, 90, 180 or 270.");
+    }
+
     let mut rpi = data.lock().unwrap();
     (*rpi).rotation = *path;
 
