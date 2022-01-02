@@ -31,8 +31,8 @@ pub struct RpiCam {
     pub metering: String,
     pub drc: String,
 
-    preview_process: Option<Child>
-    
+    preview_process: Option<Child>,
+    is_in_capture: bool
 }
 
 impl RpiCam{
@@ -66,20 +66,26 @@ impl RpiCam{
             metering: String::from("average"),
             drc: String::from("off"),
 
-            preview_process: None
+            preview_process: None,
+            is_in_capture: false
         }
     }
 
     pub fn take_photo(&mut self, filename : &str) -> Result<(), String>{
 
-        let mut command = self.generate_raspi_command("raspistill", 1);
-        command.args(&["-o", filename]);
+        if self.is_in_capture { return Err(String::from("Capture in progress...")); }
+
+        let mut command = self.generate_raspistill_command(1, filename);
 
         println!("{:#?}", command);
 
+        self.is_in_capture = true;
         self.stop_preview();
+        
         let result = command.output();
+
         self.start_preview();
+        self.is_in_capture = false;
 
         match result {
             Ok(_) => Ok(()),
@@ -87,16 +93,37 @@ impl RpiCam{
         }
     }
 
+    pub fn take_video(&mut self, filename: &str, duration: u16) -> Result<(), String> {
+
+        if self.is_in_capture { return Err(String::from("Capture in progress...")); }
+
+        let mut command = Command::new("raspisvid");
+        command = self.apply_common_parameters(command, duration, filename);
+
+        self.is_in_capture = true;
+        self.stop_preview();
+
+        let result = command.output();
+
+        self.start_preview();
+        self.is_in_capture = false;
+
+        match result {
+            Ok(_) => Ok(()),
+            Err(e) => Err(format!("[take_video error] {}", e))
+        }
+    }
+
     pub fn start_preview(&mut self) {
 
-        if env::var(ENV_DISABLE_PREVIEW).is_ok() { return; }
+        if env::var(ENV_DISABLE_PREVIEW).is_ok() || self.is_in_capture { return; }
 
         if self.preview_process.is_some() {
             return;
         }
 
-        let mut cmd = self.generate_raspi_command("raspistill", 0);
-        cmd.args(&["-tl", "500", "-o", FILENAME_PREVIEW]);
+        let mut cmd = self.generate_raspistill_command(0, FILENAME_PREVIEW);
+        cmd.args(&["-tl", "500"]);
 
         if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
             cmd.stdout(Stdio::null()).stderr(Stdio::null());
@@ -147,9 +174,16 @@ impl RpiCam{
         return first_letter == 'S' || first_letter == 'R';
     }
 
-    fn generate_raspi_command(&self, cmd_name: &str, timeout: u8) -> Command{
-        let mut cmd = Command::new(cmd_name);
-        
+    fn generate_raspistill_command(&self, timeout: u8, filename: &str) -> Command{
+        let mut cmd = Command::new("raspistill");
+        cmd = self.apply_common_parameters(cmd, timeout.into(), filename);
+        cmd.arg("-q").arg(self.quality.to_string());
+
+        return cmd;
+    }
+
+    fn apply_common_parameters(&self, mut cmd : Command, timeout: u16, filename: &str) -> Command {
+
 
         // Rotation force to change the size of the picture or raspistill will crop it. 
         // See: https://forums.raspberrypi.com/viewtopic.php?t=47650#p533620
@@ -166,7 +200,6 @@ impl RpiCam{
         };
 
         cmd.arg("-rot").arg(self.rotation.to_string())
-            .arg("-q").arg(self.quality.to_string())
             .arg("-sh").arg(self.sharpness.to_string())
             .arg("-co").arg(self.contrast.to_string())
             .arg("-br").arg(self.brightness.to_string())
@@ -187,9 +220,11 @@ impl RpiCam{
 
         if self.hflip { cmd.arg("-hf"); }
         if self.vflip { cmd.arg("-vf"); }
-        if self.shutter_speed > 0 { cmd.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
         if self.stabilization { cmd.arg("-vs"); }
+        if self.exposure == "off" { cmd.arg("-ss").arg((self.shutter_speed * 1000).to_string()); }
         if self.awb == "off" { cmd.arg("-awbg").arg(format!("{},{}", self.awb_blue, self.awb_red)); }
+
+        cmd.args(&["-o", filename]);
 
         return cmd;
     }

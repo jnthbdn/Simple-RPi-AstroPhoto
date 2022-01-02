@@ -27,6 +27,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(server_data)
             .service(routes::take_photo)
+            .service(routes::take_video)
             .service(routes::preview)
 
             .service(routes::set_width)
