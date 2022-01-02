@@ -46,7 +46,7 @@ pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
 #[get("/take_video/{duration}")]
 pub async fn take_video(data: web::Data<MutexRpiCam>, duration: web::Path<u16>) -> HttpResponse {
 
-    let filename = format!("video_{}.jpg", Local::now().format("%Y-%m-%d_%H:%M:%S"));
+    let filename = format!("video_{}.h264", Local::now().format("%Y-%m-%d_%H:%M:%S"));
 
     let vid = data.lock().unwrap().take_video(&capture_path(&filename), *duration);
 
