@@ -140,11 +140,22 @@ impl RpiCam{
     fn generate_raspi_command(&self, cmd_name: &str, timeout: u8) -> Command{
         let mut cmd = Command::new(cmd_name);
         
-        
-        cmd.arg("-w").arg(self.width.to_string())
-            .arg("-h").arg(self.height.to_string())
-            .arg("-rot").arg(self.rotation.to_string())
 
+        // Rotation force to change the size of the picture or raspistill will crop it. 
+        // See: https://forums.raspberrypi.com/viewtopic.php?t=47650#p533620
+        match self.rotation {
+            0 | 180 => {
+                cmd.arg("-w").arg(self.width.to_string())
+                    .arg("-h").arg(self.height.to_string());
+            }
+            90 | 270 => {
+                cmd.arg("-w").arg(self.height.to_string())
+                    .arg("-h").arg(self.width.to_string());
+            }
+            _ => ()
+        };
+
+        cmd.arg("-rot").arg(self.rotation.to_string())
             .arg("-sh").arg(self.sharpness.to_string())
             .arg("-co").arg(self.contrast.to_string())
             .arg("-br").arg(self.brightness.to_string())
