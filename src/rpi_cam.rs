@@ -92,10 +92,6 @@ impl RpiCam{
 
         if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
             cmd.stdout(Stdio::null()).stderr(Stdio::null());
-            println!("Hide MMAL_Error");
-        }
-        else{
-            println!("Show MMAL_Error")
         }
 
         self.preview_process = Some( cmd.spawn().expect("Failed to start rpistill"));
