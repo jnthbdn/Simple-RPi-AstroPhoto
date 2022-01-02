@@ -258,3 +258,7 @@ function toggle_crosshair(enable){
         console.log("Disable crosshair");
     }
 }
+
+function change_preview_fit(classname){
+    document.getElementById("preview").className = classname;
+}

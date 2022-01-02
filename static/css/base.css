@@ -144,6 +144,22 @@ input[type="range"]{
     text-align: center;
 }
 
-#right_container_content img{
-    width: 100%;
+#preview.fit{
+    max-width: 100%;
+    max-height: 100vh;
+}
+
+#preview.original{
+    max-height: none;
+    max-width: none;
+}
+
+#preview.fit-width{
+    max-height: none;
+    max-width: 100%;
+}
+
+#preview.fit-height{
+    max-height: 100vh;
+    max-width: none;
 }

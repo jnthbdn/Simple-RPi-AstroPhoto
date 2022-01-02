@@ -138,11 +138,17 @@
                     <table>
                         <tr>
                             <td>Enable preview :</td>
-                            <td><input type="checkbox" id="enable_preview" checked onchange="toggle_preview(this.checked);"/></td>
+                            <td><input type="checkbox" checked onchange="toggle_preview(this.checked);"/></td>
                         </tr>
                         <tr>
                             <td>Show crosshair:</td>
-                            <td><input type="checkbox" id="enable_crosshair" onchange="toggle_crosshair(this.checked);"/></td>
+                            <td><input type="checkbox" onchange="toggle_crosshair(this.checked);"/></td>
+                        </tr>
+                        <tr>
+                            <td>Preview fit option: </td>
+                            <td>
+                                <select onchange="change_preview_fit(this.value)"><option value="fit">Fit</option><option value="fit-width">Fit to width</option><option value="fit-height">Fit to height</option><option value="original">Original Size</option></select>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -156,8 +162,7 @@
             <div id="spacer_container"><div unselectable="on" class="unselectable">&#11837;</div></div>
             <div id="right_container">
                 <div id="right_container_content">
-                    <span>Show&nbsp;cross-hair: <input type="checkbox" id="show_crosshair"></span>
-                    <img id="preview" src=""/>
+                    <img id="preview" src="" class="fit" />
                 </div>
             </div>
         </div>
