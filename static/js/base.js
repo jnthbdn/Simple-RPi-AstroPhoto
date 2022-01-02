@@ -1,5 +1,6 @@
 let panelContainer;
 let default_config = {};
+let is_preview_enable = true;
 
 function evt_change(elem, targetID){
     let field = document.getElementById(targetID);
@@ -233,21 +234,19 @@ function init_base(){
 }
 
 function refresh_preview(preview_id){
+
+    if( !is_preview_enable ){ return; }
+
     var date = new Date();
     var url = "/take_photo"
-    var img_url = `/preview?id=${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
+    var img_url = `/preview?id=${date.getSeconds()}-${date.getMilliseconds()}`;
 
     document.getElementById(preview_id).src=img_url;
-    setTimeout(() => refresh_preview(preview_id), 500);
+    // setTimeout(() => refresh_preview(preview_id), 500);
 }
 
 function toggle_preview(enable){
-    if(enable){
-        console.log("Enable preview");
-    }
-    else{
-        console.log("Disable preview");
-    }
+    is_preview_enable = enable;
 }
 
 function toggle_crosshair(enable){
