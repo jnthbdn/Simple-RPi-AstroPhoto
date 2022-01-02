@@ -97,8 +97,10 @@ impl RpiCam{
 
         if self.is_in_capture { return Err(String::from("Capture in progress...")); }
 
-        let mut command = Command::new("raspisvid");
+        let mut command = Command::new("raspivid");
         command = self.apply_common_parameters(command, duration, filename);
+
+        println!("{:#?}", command);
 
         self.is_in_capture = true;
         self.stop_preview();
