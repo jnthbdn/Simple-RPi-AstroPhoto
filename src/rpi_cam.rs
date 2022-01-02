@@ -87,18 +87,18 @@ impl RpiCam{
 
     pub fn start_preview(&mut self) {
 
-        // if self.preview_process.is_some() {
-        //     return;
-        // }
+        if self.preview_process.is_some() {
+            return;
+        }
 
-        // let mut cmd = self.generate_raspi_command("raspistill", 0);
-        // cmd.args(&["-tl", "500", "-o", FILENAME_PREVIEW]);
+        let mut cmd = self.generate_raspi_command("raspistill", 0);
+        cmd.args(&["-tl", "500", "-o", FILENAME_PREVIEW]);
 
-        // if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
-        //     cmd.stdout(Stdio::null()).stderr(Stdio::null());
-        // }
+        if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
+            cmd.stdout(Stdio::null()).stderr(Stdio::null());
+        }
 
-        // self.preview_process = Some( cmd.spawn().expect("Failed to start rpistill"));
+        self.preview_process = Some( cmd.spawn().expect("Failed to start rpistill"));
 
     }
 
