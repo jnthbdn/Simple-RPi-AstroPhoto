@@ -240,3 +240,21 @@ function refresh_preview(preview_id){
     document.getElementById(preview_id).src=img_url;
     setTimeout(() => refresh_preview(preview_id), 500);
 }
+
+function toggle_preview(enable){
+    if(enable){
+        console.log("Enable preview");
+    }
+    else{
+        console.log("Disable preview");
+    }
+}
+
+function toggle_crosshair(enable){
+    if(enable){
+        console.log("Enable crosshair");
+    }
+    else{
+        console.log("Disable crosshair");
+    }
+}
