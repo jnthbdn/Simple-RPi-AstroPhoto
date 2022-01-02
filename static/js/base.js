@@ -231,6 +231,9 @@ function init_base(){
 
     default_config = save_config(false);
     load_config();
+
+    // Trigger 'input' event on awb to check value
+    document.getElementById("awb").dispatchEvent(new Event('input'));
 }
 
 function refresh_preview(preview_id){
