@@ -98,7 +98,7 @@ impl RpiCam{
         if self.is_in_capture { return Err(String::from("Capture in progress...")); }
 
         let mut command = Command::new("raspivid");
-        command = self.apply_common_parameters(command, duration, filename);
+        command = self.apply_common_parameters(command, u32::from(duration) * 1000, filename);
 
         println!("{:#?}", command);
 
@@ -184,7 +184,7 @@ impl RpiCam{
         return cmd;
     }
 
-    fn apply_common_parameters(&self, mut cmd : Command, timeout: u16, filename: &str) -> Command {
+    fn apply_common_parameters(&self, mut cmd : Command, timeout: u32, filename: &str) -> Command {
 
 
         // Rotation force to change the size of the picture or raspistill will crop it. 
