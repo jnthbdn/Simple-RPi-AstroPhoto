@@ -103,6 +103,14 @@ function awb_gain_only_off(awb_id, awbblue_id, awbred_id){
     }
 }
 
+function shutterspeed_only_off(exposure_id, shutterspeed_id){
+
+    let exposure = document.getElementById(exposure_id);
+    let shutterspeed = document.getElementById(shutterspeed_id);
+
+    shutterspeed.disabled = (exposure.value != "off");
+}
+
 
 function send_data(id){
     let elem = document.getElementById(id);
@@ -210,11 +218,10 @@ function init_base(){
     panelContainer = new TwoPanelContainer("left_container", "right_container", "spacer_container");
     modal = new Modal("modal", "modal_title", "modal_text");
 
-
     add_preset_event("preset", "width", "height");
-    awb_gain_only_off("awb", "awbblue", "awbred");
 
-    document.getElementById("awb").addEventListener( "input", (evt) => awb_gain_only_off("awb", "awbblue", "awbred"));  
+    document.getElementById("awb").addEventListener( "change", (evt) => awb_gain_only_off("awb", "awbblue", "awbred"));  
+    document.getElementById("exposure").addEventListener( "change", (evt) => shutterspeed_only_off("exposure", "shutterspeed"));  
 
     document.querySelectorAll("[sendonchange]").forEach( (elem) => {
 
@@ -235,7 +242,8 @@ function init_base(){
     load_config();
 
     // Trigger 'input' event on awb to check value
-    document.getElementById("awb").dispatchEvent(new Event('input'));
+    document.getElementById("awb").dispatchEvent(new Event('change'));
+    document.getElementById("exposure").dispatchEvent(new Event('change'));
 }
 
 function refresh_preview(preview_id){
