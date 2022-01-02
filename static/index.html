@@ -161,8 +161,11 @@
                 </div>
                 <div class="option_block">
                     <p class="title_block">Actions</p>
-                    <button class="primary-button" onclick="take_photo()">Take photo</button><button class="primary-button">Take video</button><br/>
+                    <button class="primary-button" onclick="take_photo()">Take photo</button><br/>
+                    <button class="primary-button" onclick="take_video()">Take video</button> for <input type="number" min="1" step="1" id="duration_video" value="5"/><br/>
+                    <br/>
                     <button class="">Open capture folder</button><br/>
+                    <br/>
                     <button class="danger-button" onclick="reset_config()">Reset all parameters</button>
                 </div>
             </div>
@@ -174,12 +177,12 @@
             </div>
         </div>
 
-        <div id="modal" class="danger">
+        <div id="modal" class="">
             <div class="container">
                 <div class="logo"></div>
                 <div class="close" onclick="modal.close()">&#128473;</div>
-                <p id="modal_title" class="title">Un danger !!</p>
-                <p id="modal_text" class="content">Ceci est le text du danger !</p>
+                <p id="modal_title" class="title"></p>
+                <p id="modal_text" class="content"></p>
             </div>
         </div>
 

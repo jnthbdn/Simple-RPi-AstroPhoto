@@ -282,6 +282,38 @@ async function take_photo(){
     }
 }
 
+async function take_video(){
+    var duration = document.getElementById("duration_video");
+
+    if( isNaN(duration.value) || duration.value < 1 ){
+        duration.value = 1;
+    }
+
+    var text = `Taking video (during ${duration.value} second${duration.value > 1 ? "s" : ""}) please wait...`;
+    var title = "Taking video";
+
+    modal.showInfo(title, text);
+
+    try{
+        var resp = await fetch(`/take_video/${duration.value}`);
+        var body = await resp.text();
+
+        if( resp.ok ){
+            text += `<br/><br/>Success : ${body}`;
+            modal.showInfo(title, text);
+        }
+        else{
+            text += `<br/><br/>Failure : ${resp.status} - ${body}`;
+            modal.showError(title, text);
+        }
+    }
+    catch(e){
+        text += "<br/><br/>Failure : Internal Error.";
+        console.error(e);
+        modal.showError(title, text);
+    }
+}
+
 function toggle_preview(enable){
     is_preview_enable = enable;
 }
