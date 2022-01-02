@@ -68,33 +68,37 @@ impl RpiCam{
         }
     }
 
-    pub fn take_pic(&self, filename : &str) -> Result<(), String>{
+    pub fn take_photo(&mut self, filename : &str) -> Result<(), String>{
 
         let mut command = self.generate_raspi_command("raspistill", 1);
         command.args(&["-o", filename]);
 
         println!("{:#?}", command);
 
-        match command.output() {
+        self.stop_preview();
+        let result = command.output();
+        self.start_preview();
+
+        match result {
             Ok(_) => Ok(()),
-            Err(e) => Err(format!("ERROR: {}", e))
+            Err(e) => Err(format!("[take_photo error] {}", e))
         }
     }
 
     pub fn start_preview(&mut self) {
 
-        if self.preview_process.is_some() {
-            return;
-        }
+        // if self.preview_process.is_some() {
+        //     return;
+        // }
 
-        let mut cmd = self.generate_raspi_command("raspistill", 0);
-        cmd.args(&["-tl", "500", "-o", FILENAME_PREVIEW]);
+        // let mut cmd = self.generate_raspi_command("raspistill", 0);
+        // cmd.args(&["-tl", "500", "-o", FILENAME_PREVIEW]);
 
-        if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
-            cmd.stdout(Stdio::null()).stderr(Stdio::null());
-        }
+        // if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
+        //     cmd.stdout(Stdio::null()).stderr(Stdio::null());
+        // }
 
-        self.preview_process = Some( cmd.spawn().expect("Failed to start rpistill"));
+        // self.preview_process = Some( cmd.spawn().expect("Failed to start rpistill"));
 
     }
 

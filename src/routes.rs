@@ -22,7 +22,7 @@ pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
             match pic {
                 Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
                 Err(e) =>{
-                    eprintln!("DEFAULT PREVIEW ERROR : {}", e);
+                    eprintln!("DEFAtake_photoIEW ERROR : {}", e);
                     return HttpResponse::InternalServerError().body(format!("{}", e));
                 }
             }
@@ -35,10 +35,10 @@ pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
 
     let filename = format!("photo_{}.jpg", Local::now().format("%Y-%m-%d_%H:%M:%S"));
 
-    let pic = data.lock().unwrap().take_pic(&capture_path(&filename));
+    let pic = data.lock().unwrap().take_photo(&capture_path(&filename));
 
     match pic{
-        Ok(_) => HttpResponse::Ok().body("Done !"),
+        Ok(_) => HttpResponse::Ok().body(filename),
         Err(s) => HttpResponse::InternalServerError().body(s)
     }
 }
