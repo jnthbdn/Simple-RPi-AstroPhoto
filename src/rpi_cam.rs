@@ -84,8 +84,8 @@ impl RpiCam{
         
         let result = command.output();
 
-        self.start_preview();
         self.is_in_capture = false;
+        self.start_preview();
 
         match result {
             Ok(_) => Ok(()),
@@ -107,8 +107,8 @@ impl RpiCam{
 
         let result = command.output();
 
-        self.start_preview();
         self.is_in_capture = false;
+        self.start_preview();
 
         match result {
             Ok(_) => Ok(()),
