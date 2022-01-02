@@ -11,6 +11,7 @@ pub struct RpiCam {
     pub hflip: bool,
     pub vflip: bool,
     pub rotation: u32,
+    pub quality: u8,
 
     pub shutter_speed: u32,
     pub sharpness: i8,
@@ -44,6 +45,7 @@ impl RpiCam{
             hflip: false,
             vflip: false,
             rotation: 0,
+            quality: 75,
 
             shutter_speed: 0,
             sharpness: 0,
@@ -86,6 +88,8 @@ impl RpiCam{
     }
 
     pub fn start_preview(&mut self) {
+
+        if env::var(ENV_DISABLE_PREVIEW).is_ok() { return; }
 
         if self.preview_process.is_some() {
             return;
@@ -162,6 +166,7 @@ impl RpiCam{
         };
 
         cmd.arg("-rot").arg(self.rotation.to_string())
+            .arg("-q").arg(self.quality.to_string())
             .arg("-sh").arg(self.sharpness.to_string())
             .arg("-co").arg(self.contrast.to_string())
             .arg("-br").arg(self.brightness.to_string())

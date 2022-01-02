@@ -34,6 +34,7 @@ async fn main() -> std::io::Result<()> {
             .service(routes::set_hflip)
             .service(routes::set_vflip)
             .service(routes::set_rotation)
+            .service(routes::set_quality)
             .service(routes::set_shutter_speed)
             .service(routes::set_sharpness)
             .service(routes::set_contrast)

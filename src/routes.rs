@@ -103,6 +103,17 @@ pub async fn set_rotation(data: web::Data<MutexRpiCam>, path: web::Path<u32>) ->
     HttpResponse::Ok().body("")
 }
 
+#[post("/quality/{value}")]
+pub async fn set_quality(data: web::Data<MutexRpiCam>, path: web::Path<u8>) -> HttpResponse {
+    
+    let mut rpi = data.lock().unwrap();
+    (*rpi).quality = *path;
+
+    rpi.restart_preview();
+
+    HttpResponse::Ok().body("")
+}
+
 #[post("/shutterspeed/{value}")]
 pub async fn set_shutter_speed(data: web::Data<MutexRpiCam>, path: web::Path<u32>) -> HttpResponse {
     
