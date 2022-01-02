@@ -100,6 +100,20 @@ impl RpiCam{
         let mut command = Command::new("raspivid");
         command = self.apply_common_parameters(command, u32::from(duration) * 1000, filename);
 
+        // Rotation force to change the size of the picture or raspistill will crop it. 
+        // See: https://forums.raspberrypi.com/viewtopic.php?t=47650#p533620
+        match self.rotation {
+            0 | 180 => {
+                command.arg("-w").arg(self.height.to_string())
+                    .arg("-h").arg(self.width.to_string());
+            }
+            90 | 270 => {
+                command.arg("-w").arg(self.width.to_string())
+                    .arg("-h").arg(self.height.to_string());
+            }
+            _ => ()
+        };
+
         println!("{:#?}", command);
 
         self.is_in_capture = true;
@@ -181,12 +195,6 @@ impl RpiCam{
         cmd = self.apply_common_parameters(cmd, timeout.into(), filename);
         cmd.arg("-q").arg(self.quality.to_string());
 
-        return cmd;
-    }
-
-    fn apply_common_parameters(&self, mut cmd : Command, timeout: u32, filename: &str) -> Command {
-
-
         // Rotation force to change the size of the picture or raspistill will crop it. 
         // See: https://forums.raspberrypi.com/viewtopic.php?t=47650#p533620
         match self.rotation {
@@ -200,6 +208,12 @@ impl RpiCam{
             }
             _ => ()
         };
+
+
+        return cmd;
+    }
+
+    fn apply_common_parameters(&self, mut cmd : Command, timeout: u32, filename: &str) -> Command {
 
         cmd.arg("-rot").arg(self.rotation.to_string())
             .arg("-sh").arg(self.sharpness.to_string())
