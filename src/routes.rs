@@ -1,3 +1,4 @@
+use chrono::prelude::Local;
 use actix_web::{get, post, web, HttpResponse};
 use std::sync::{Arc, Mutex};
 use std::fs;
@@ -31,7 +32,10 @@ pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
 
 #[get("/take_photo")]
 pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
-    let pic = data.lock().unwrap().take_pic(&capture_path("capture.jpg"));
+
+    let filename = format!("photo_{}.jpg", Local::now().format("%Y-%m-%d_%H:%M:%S"));
+
+    let pic = data.lock().unwrap().take_pic(&capture_path(&filename));
 
     match pic{
         Ok(_) => HttpResponse::Ok().body("Done !"),
