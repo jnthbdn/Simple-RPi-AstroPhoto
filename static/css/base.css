@@ -6,6 +6,13 @@ body{
     overflow: hidden;
 }
 
+table{
+    border-collapse: collapse;
+    width: 100%;
+}
+    table tr td { padding: 0px 8px; }
+        table tr td input { width: 100%; }
+
 button {
     line-height: 32px;
     padding: 0px 16px;
@@ -163,3 +170,64 @@ input[type="range"]{
     max-height: 100vh;
     max-width: none;
 }
+
+#modal{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000080;
+    z-index: 999999999999;
+
+    display: none;
+}
+
+#modal .container {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    max-width: 60%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    padding: 16px;
+    background-color: purple;
+}
+
+#modal .container .logo,
+#modal .container .close  {
+    position: absolute;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    overflow: hidden;
+    font-size: 32px;
+    cursor: pointer;
+    line-height: 1;
+    text-align: center;
+}
+#modal .container .logo { left: 0; }
+#modal .container .close { right: 0; }
+
+#modal .container .title{
+    position: absolute;
+    top: 0;
+    left: calc(32px + 8px);
+    width: calc( 100% - 32px - 32px - 8px);
+    height: 32;
+
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+
+    margin-top: 0;
+    line-height: 2;
+}
+
+#modal .container .content {
+    margin-top: 32px;
+    padding-left: 8px;
+}
+
+#modal.danger .container .logo::before { content: '\26A0'; }
+#modal.info .container .logo::before { content: '\1F6C8'; }
