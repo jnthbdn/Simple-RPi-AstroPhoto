@@ -1,5 +1,8 @@
 use std::result::Result;
 use std::process::{Command, Child, Stdio};
+use std::env;
+
+use crate::constants::*;
 
 pub struct RpiCam {
     pub width: u32,
@@ -30,9 +33,6 @@ pub struct RpiCam {
     preview_process: Option<Child>
     
 }
-
-
-pub static FILENAME_PREVIEW : &str = "static/capture/preview.jpg";
 
 impl RpiCam{
 
@@ -87,12 +87,14 @@ impl RpiCam{
             return;
         }
 
-        self.preview_process = Some(self.generate_raspi_command("raspistill", 0)
-                                .args(&["-tl", "500", "-o", FILENAME_PREVIEW])
-                                .stdout(Stdio::null())
-                                .stderr(Stdio::null())
-                                .spawn()
-                                .expect("Failed to start rpistill"));
+        let mut cmd = self.generate_raspi_command("raspistill", 0);
+        cmd.args(&["-tl", "500", "-o", FILENAME_PREVIEW]);
+
+        if env::var(ENV_SHOW_MMAL_ERROR).is_err() {
+            cmd.stdout(Stdio::null()).stderr(Stdio::null());
+        }
+
+        self.preview_process = Some( cmd.spawn().expect("Failed to start rpistill"));
 
     }
 

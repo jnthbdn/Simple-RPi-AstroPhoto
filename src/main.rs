@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 
 pub mod rpi_cam;
 pub mod routes;
+mod constants;
 
 use rpi_cam::RpiCam;
 

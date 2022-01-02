@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::fs;
 
 use crate::rpi_cam::RpiCam;
+use crate::constants::*;
 
 type MutexRpiCam = Arc<Mutex<RpiCam>>;
 
@@ -10,7 +11,7 @@ type MutexRpiCam = Arc<Mutex<RpiCam>>;
 pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
     data.lock().unwrap().check_preview_status();
 
-    let pic = fs::read(crate::rpi_cam::FILENAME_PREVIEW);
+    let pic = fs::read(FILENAME_PREVIEW);
     match pic{
         Ok(_) => HttpResponse::Ok().content_type("image/jpg").body(pic.unwrap()),
         Err(e) => {
@@ -30,7 +31,7 @@ pub async fn preview(data: web::Data<MutexRpiCam>) -> HttpResponse {
 
 #[get("/take_photo")]
 pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
-    let pic = data.lock().unwrap().take_pic("static/capture/capture.jpg");
+    let pic = data.lock().unwrap().take_pic(&capture_path("capture.jpg"));
 
     match pic{
         Ok(_) => HttpResponse::Ok().body("Done !"),
