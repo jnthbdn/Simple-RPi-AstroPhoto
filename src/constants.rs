@@ -1,4 +1,5 @@
 pub static PATH_SAVE_CAPTURE: &str = "static/capture/";
+pub static HREF_CAPTURE_PATH : &str = "/capture/";
 pub static FILENAME_PREVIEW : &str = "static/capture/preview.jpg";
 
 // Env. variables

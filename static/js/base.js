@@ -2,6 +2,7 @@ let modal;
 let panelContainer;
 let default_config = {};
 let is_preview_enable = true;
+let capture_table;
 
 function evt_change(elem, targetID){
     let field = document.getElementById(targetID);
@@ -244,6 +245,7 @@ function init_base(){
     // Trigger 'input' event on awb to check value
     document.getElementById("awb").dispatchEvent(new Event('change'));
     document.getElementById("exposure").dispatchEvent(new Event('change'));
+    table = new SimpleDataTable("capture_table");
 }
 
 function refresh_preview(preview_id){
@@ -329,4 +331,49 @@ function toggle_crosshair(enable){
 
 function change_preview_fit(classname){
     document.getElementById("preview").className = classname;
+}
+
+async function open_capture_folder(){
+
+    fetch("/list_capture")
+    .then(result => {
+
+        if( !result.ok ){
+            modal.showError("Failed to load capture", "Unable to load capture data : " + e);
+            return;
+        }
+
+        result.json()
+        .then( (json) => {
+
+            var tbody = document.getElementById("capture_table").querySelector("tbody");
+            tbody.innerHTML = "";
+
+            for( const line of json ){
+                var tr = document.createElement("tr");
+
+                tr.innerHTML = `<td><input type="checkbox" /></td>`;
+                tr.innerHTML += `<td><img src="${line["href"]}" width="200px"/></td>`;
+                tr.innerHTML += `<td>${line["filename"]}</td>`;
+                tr.innerHTML += `<td>${line["date"]}</td>`;
+                tr.innerHTML += `<td>${line["size"]}</td>`;
+                tr.innerHTML += `<td>${line["file_type"]}</td>`;
+                tr.innerHTML += `<td><button class="primary-button">Download</button><button>Open</button><button class="danger-button">Delete</button></td>`;
+
+                tbody.append(tr);
+            }
+
+            document.getElementById("capture_folder").style.display = "block";
+        })
+        .catch((e) => {
+            modal.showError("Failed to parse capture inforamtions", "Unable to parse capture datas : " + e);
+        });
+    })
+    .catch( (e) => {
+        modal.showError("Failed to load capture", "An error occured : " + e);
+    });
+}
+
+function close_capture_folder(){
+    document.getElementById("capture_folder").style.display = "none";
 }

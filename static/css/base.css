@@ -1,3 +1,8 @@
+
+/* =============================================================== */
+/* === GENERAL ================================================= */
+/* =========================================================== */
+
 body{
     margin: 0;
     padding: 0;
@@ -52,6 +57,11 @@ input[type="range"]{
         border-radius: 100%;
     }
 
+
+/* =============================================================== */
+/* === MAIN PAGE =============================================== */
+/* =========================================================== */
+
 #main_container{
     position: relative;
     width: 100%;
@@ -89,7 +99,7 @@ input[type="range"]{
     left: calc( 50vw - 2px);
 
     cursor: ew-resize;
-    z-index: 999999999;
+    z-index: 100;
 }
     #spacer_container div {  
         padding: 0;
@@ -171,6 +181,68 @@ input[type="range"]{
     max-width: none;
 }
 
+
+/* =============================================================== */
+/* === CAPTURE FOLDER ========================================== */
+/* =========================================================== */
+
+#capture_folder{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 200;
+    box-sizing: border-box;
+    display: none;
+
+
+    padding: 16px;
+    background-color: black;
+}
+
+#capture_folder #quit {
+    border-radius: 20px;
+    font-size: 1.2em;
+    text-transform: initial;
+}
+
+#capture_folder .content {
+    padding-top: 32px;
+    width: 100%;
+    height: calc(100% - 42px);
+    box-sizing: border-box;
+}
+
+
+#container_capture_table{
+    width: 100%;
+    height: calc(100% - 42px);
+    overflow: auto;
+}
+
+#capture_folder .content table {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #555555;
+}
+
+#capture_folder .content table thead tr td {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#capture_folder .content table td {
+    border-top: 1px solid #555555;
+    border-bottom: 1px solid #555555;
+    text-align: right;
+}
+
+/* =============================================================== */
+/* === MODAL =================================================== */
+/* =========================================================== */
+
 #modal{
     position: absolute;
     top: 0;
@@ -191,7 +263,6 @@ input[type="range"]{
     transform: translate(-50%, -50%);
     border-radius: 5px;
     padding: 16px;
-    background-color: purple;
 }
 
 #modal .container .logo,

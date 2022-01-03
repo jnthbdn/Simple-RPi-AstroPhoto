@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 pub mod rpi_cam;
 pub mod routes;
 mod constants;
+mod file;
 
 use rpi_cam::RpiCam;
 
@@ -29,6 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(routes::take_photo)
             .service(routes::take_video)
             .service(routes::preview)
+            .service(routes::list_capture_files)
 
             .service(routes::set_width)
             .service(routes::set_height)

@@ -5,6 +5,7 @@ use std::fs;
 
 use crate::rpi_cam::RpiCam;
 use crate::constants::*;
+use crate::file::get_capture_files;
 
 type MutexRpiCam = Arc<Mutex<RpiCam>>;
 
@@ -54,6 +55,21 @@ pub async fn take_video(data: web::Data<MutexRpiCam>, duration: web::Path<u16>) 
         Ok(_) => HttpResponse::Ok().body(filename),
         Err(s) => HttpResponse::InternalServerError().body(s)
     }
+}
+
+#[get("/list_capture")]
+pub async fn list_capture_files() -> HttpResponse {
+
+    let files = get_capture_files(PATH_SAVE_CAPTURE);
+    let mut body = String::new();
+
+    for f in files {
+        body += f.to_json().as_ref();
+        body += ",";
+    }
+    body.pop(); // Remove last comma ;)
+
+    HttpResponse::Ok().body(format!("[{}]", body))
 }
 
 #[post("/width/{value}")]

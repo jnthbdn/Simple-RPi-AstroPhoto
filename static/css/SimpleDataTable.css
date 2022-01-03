@@ -1,0 +1,10 @@
+table.sdt-table thead tr td.sdt-sortable { cursor: pointer; }
+
+table.sdt-table thead tr td.sdt-sort-asc,
+table.sdt-table thead tr td.sdt-sort-desc {
+    text-decoration: underline;
+}
+
+table.sdt-table thead tr td.sdt-sort-asc::after { content: '\25B2'; } 
+
+table.sdt-table thead tr td.sdt-sort-desc::after { content: '\25BC'; } 
