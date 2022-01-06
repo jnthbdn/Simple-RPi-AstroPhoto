@@ -465,8 +465,13 @@ async function download_selection(){
 async function delete_selection(){
 
     let selection = document.getElementById("capture_folder").querySelectorAll("input[type=checkbox]:checked");
-
     let errors = [];
+
+    if( selection.length == 0){return;}
+
+    if( !confirm(`Are you sure you want to delete the selection ? You can't undo this action.`) ){
+        return;
+    }
 
 
     for( const sel of selection ){
