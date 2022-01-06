@@ -1,7 +1,8 @@
 use chrono::prelude::Local;
-use actix_web::{get, post, web, HttpResponse};
+use actix_web::{get, post, delete, web, HttpResponse};
 use std::sync::{Arc, Mutex};
 use std::fs;
+use std::path::Path;
 
 use crate::rpi_cam::RpiCam;
 use crate::constants::*;
@@ -47,7 +48,7 @@ pub async fn take_photo(data: web::Data<MutexRpiCam>) -> HttpResponse {
 #[get("/take_video/{duration}")]
 pub async fn take_video(data: web::Data<MutexRpiCam>, duration: web::Path<u16>) -> HttpResponse {
 
-    let filename = format!("video_{}.h264", Local::now().format("%Y-%m-%d_%H:%M:%S"));
+    let filename = format!("video_{}.mpeg", Local::now().format("%Y-%m-%d_%H:%M:%S"));
 
     let vid = data.lock().unwrap().take_video(&capture_path(&filename), *duration);
 
@@ -71,6 +72,25 @@ pub async fn list_capture_files() -> HttpResponse {
 
     HttpResponse::Ok().body(format!("[{}]", body))
 }
+
+#[delete("/delete/{filename}")]
+pub async fn delete_file(filename: web::Path<String>) -> HttpResponse {
+
+    let fullpath = capture_path(&filename);
+    let filepath = Path::new(&fullpath);
+
+
+
+    if !filepath.exists() {
+        return HttpResponse::NotFound().body("");
+    }
+
+    match fs::remove_file(filepath) {
+        Ok(_) => HttpResponse::Ok().body(""),
+        Err(e) => HttpResponse::InternalServerError().body(format!("{}", e))
+    }
+}
+
 
 #[post("/width/{value}")]
 pub async fn set_width(data: web::Data<MutexRpiCam>, path: web::Path<u32>) -> HttpResponse {

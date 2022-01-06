@@ -31,6 +31,7 @@ async fn main() -> std::io::Result<()> {
             .service(routes::take_video)
             .service(routes::preview)
             .service(routes::list_capture_files)
+            .service(routes::delete_file)
 
             .service(routes::set_width)
             .service(routes::set_height)

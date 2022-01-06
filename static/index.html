@@ -5,10 +5,14 @@
         <link rel="stylesheet" href="css/color.css"/>
         <link rel="stylesheet" href="css/SimpleDataTable.css"/>
 
+        <script src="js/FileSaver.min.js"></script>
+        <script src="js/jszip.min.js"></script>
+
         <script src="js/SimpleDataTable.js"></script>
         <script src="js/container.js"></script>
         <script src="js/modal.js"></script>
         <script src="js/base.js"></script>
+
 
     </head>
 
@@ -183,7 +187,7 @@
         <div id="capture_folder">
             <button id="quit" onclick="close_capture_folder()">&#8678; Go Back</button>
             <div class="content">
-                <button class="primary-button">Download everything</button><button class="primary-button">Download selection</button><button class="danger-button">Delete selection</button>
+                <button onclick="toggle_all_selection()">De/Select all</button><button class="primary-button" onclick="download_selection()">Download selection</button><button class="danger-button" onclick="delete_selection()">Delete selection</button>
                 <div id="container_capture_table">
                     <table id="capture_table">
                         <thead>

@@ -68,7 +68,8 @@ fn is_valid_file(file_path: &std::io::Result<DirEntry>) -> bool {
 
     match extension.unwrap().to_str(){
         Some("jpg") |
-        Some("h264") => true,
+        Some("h264") |
+        Some("mpeg") => true,
         _ => false
     }
 }
@@ -102,7 +103,7 @@ fn get_type_file(path: &PathBuf) -> String {
 
     match path.extension().unwrap().to_str(){
         Some("jpg") => String::from("Photo"),
-        Some("h264") => String::from("Video"),
+        Some("h264") | Some("mpeg") => String::from("Video"),
         _ => String::from("Unknown")
     }
 }

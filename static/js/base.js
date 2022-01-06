@@ -352,13 +352,13 @@ async function open_capture_folder(){
             for( const line of json ){
                 var tr = document.createElement("tr");
 
-                tr.innerHTML = `<td><input type="checkbox" /></td>`;
+                tr.innerHTML = `<td><input type="checkbox" filepath="${line["href"]}"/></td>`;
                 tr.innerHTML += `<td><img src="${line["href"]}" width="200px"/></td>`;
                 tr.innerHTML += `<td>${line["filename"]}</td>`;
                 tr.innerHTML += `<td>${line["date"]}</td>`;
                 tr.innerHTML += `<td>${line["size"]}</td>`;
                 tr.innerHTML += `<td>${line["file_type"]}</td>`;
-                tr.innerHTML += `<td><button class="primary-button">Download</button><button>Open</button><button class="danger-button">Delete</button></td>`;
+                tr.innerHTML += `<td><button class="primary-button" onclick="download_file('${line["href"]}', '${line["filename"]}')">Download</button><button onclick="open_file('${line["href"]}')">Open</button><button class="danger-button" onclick="delete_file('${line["href"]}')">Delete</button></td>`;
 
                 tbody.append(tr);
             }
@@ -376,4 +376,140 @@ async function open_capture_folder(){
 
 function close_capture_folder(){
     document.getElementById("capture_folder").style.display = "none";
+}
+
+function download_file(path){
+
+    let filename = path.substring(path.lastIndexOf("/") + 1)
+
+    // var a = document.createElement("a");
+    // a.href = path;
+    // a.setAttribute("download", filename);
+
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+
+    var xhr = new XMLHttpRequest()
+    xhr.open("GET", path)
+    xhr.responseType = 'blob'
+    xhr.onload = function() {
+        saveAs(xhr.response, filename);
+    }
+    xhr.send()
+
+}
+
+function open_file(path){
+    window.open(path, '_blank').focus();
+}
+
+async function delete_file(path){
+    let file = path.substring(path.lastIndexOf("/") + 1)
+    if( !confirm(`Are you sure you want to delete "${file}" ? You can't undo this action.`) ){
+        return;
+    }
+
+    let del = await request_delete_file(file);
+    if( del === true ){
+        open_capture_folder();
+    }
+    else{
+        modal.showError("Delete file", del);
+    }
+}
+
+function toggle_all_selection(){
+
+    let selection = document.getElementById("capture_folder").querySelectorAll("input[type=checkbox]");
+    let is_all_selected = document.getElementById("capture_folder").querySelectorAll("input[type=checkbox]:checked").length == selection.length;
+    
+    for( const sel of selection ){
+            sel.checked = is_all_selected ? false : true;
+    }
+}
+
+async function download_selection(){
+
+    let selection = document.getElementById("capture_folder").querySelectorAll("input[type=checkbox]:checked");
+
+    if( selection.length == 0 ){
+        showInfo("Download selection", "The selection is empty, nothing to download.");
+        return;
+    }
+
+    let zip = new JSZip();
+
+    for( const sel of selection ){
+        let path = sel.getAttribute("filepath");
+        let filename = path.substring(path.lastIndexOf("/") + 1)
+
+        try{
+            
+            let result = await fetch(path);
+            
+            if( !result.ok ){ continue; }
+
+            let blob =  result.blob();
+
+            zip.file( filename, blob, {binary: true, } );
+        }
+        catch(e){
+            console.error(e);
+        }
+    }
+
+    zip.generateAsync({type: "blob"}).then(zipfile => saveAs(zipfile, "rpi_astro.zip"));
+}
+
+async function delete_selection(){
+
+    let selection = document.getElementById("capture_folder").querySelectorAll("input[type=checkbox]:checked");
+
+    let errors = [];
+
+
+    for( const sel of selection ){
+        let path = sel.getAttribute("filepath");
+        let filename = path.substring(path.lastIndexOf("/") + 1)
+
+        let del = await request_delete_file(filename);
+
+        if( del !== true ){
+            errors.push({file: filename, error: del});
+        }
+    }
+
+    if( errors.length > 0 ){
+        let err = "";
+
+        for( const e of errors ){
+            err += `    - ${e['file']} : ${e['error']}<br />`;
+        }
+
+        modal.showError("Delete selection", "Some files can't be deleted : <br/>" + err);
+    }
+    
+    open_capture_folder();
+}
+
+async function request_delete_file(file){
+    try{
+        let result = await fetch(`/delete/${file}`, {method: "DELETE"});
+
+        if( result.ok ) {
+            return true;
+        }
+
+        if( result.status == 404 ){
+            return `The file "${file}" was not found...`;
+        }
+        else{
+            let body = await response.text();
+            return `Unable to delete "${file}": ${body}`;
+        }
+    }
+    catch(e){
+        return `An error occured during the request : "${e}"`;
+    }
 }
